@@ -1,3 +1,27 @@
+# Input
+
+https://blog.csdn.net/m0_53732376/article/details/117082802
+
+Input() 用于实例化Keras张量
+
+```python
+tensorflow.keras.Input()
+"""
+shape:元组维数，定义输入层神经元对应数据的形状。比如shape=(32, )和shape=32是等价的，表示输入都为长度为32的向量。
+
+batch_size：声明输入的batch_size大小，定义输入层时不需要声明，会在fit时声明，一般在训练时候用
+
+name：给layers起个名字，在整个神经网络中不能重复出现。如果name=None，程序会自动为该层创建名字。
+
+dtype：数据类型，一般数据类型为tf.float32，计算速度更快
+
+sparse：特定的布尔值，占位符是否为sparse
+
+tensor：可选的现有tensor包装到“Input”层。如果设置该参数，该层将不会创建占位符张量
+
+"""
+```
+
 # BatchNormalization
 
 ### 原理概述
@@ -36,6 +60,39 @@
 - `gamma_constraint`：`gamma` 的约束函数，默认为 `None`。
 
 其中，`beta` 和 `gamma` 分别是标准化后的特征向量加上偏移和缩放的参数，`moving_mean` 和 `moving_variance` 则是用于跟踪每个特征在训练期间的平均值和方差，并在预测时使用。在训练期间，`BatchNormalization` 通过计算输入数据在特征维度上的均值和标准差来标准化数据，而在预测期间，则使用之前记录下的 `moving_mean` 和 `moving_variance` 来标准化数据。这样做可以帮助模型更好地适应新的数据，并且加速了训练过程。
+
+构建BN层可以**加速训练平稳收敛**
+
+https://www.cnblogs.com/fclbky/p/12636842.html
+
+```python
+tf.layers.batch_normalization(
+    inputs,
+    axis=-1,
+    momentum=0.99,
+    epsilon=0.001,
+    center=True,
+    scale=True,
+    beta_initializer=tf.zeros_initializer(),
+    gamma_initializer=tf.ones_initializer(),
+    moving_mean_initializer=tf.zeros_initializer(),
+    moving_variance_initializer=tf.ones_initializer(),
+    beta_regularizer=None,
+    gamma_regularizer=None,
+    beta_constraint=None,
+    gamma_constraint=None,
+    training=False,
+    trainable=True,
+    name=None,
+    reuse=None,
+    renorm=False,
+    renorm_clipping=None,
+    renorm_momentum=0.99,
+    fused=None,
+    virtual_batch_size=None,
+    adjustment=None
+)
+```
 
 ### 反复归一
 
@@ -132,6 +189,53 @@ $w=[w_1,w_2,w_3,…,w_m]$
 
 需要注意的是，卷积核个数和长度的选择是需要根据具体情况进行尝试和调整的，不同的选择可能会产生不同的效果，需要根据实验结果来进行选择。
 
+**一维卷积层**
+
+1D卷积层（例如时间卷积）。
+
+通常用于**序列模型、自然语言处理**领域
+
+该层创建卷积的卷积核输入层在单个空间（或时间）维度上以产生输出张量。
+
+如果“use_bias”为True，则创建一个偏置向量并将其添加到输出中。
+
+最后如果“激活”不是“无”，
+
+它也应用于输出。
+
+当使用该层作为模型中的第一层时，
+
+提供“input_shape”参数
+
+（整数元组或“无”，例如。
+
+`对于128维向量的10个向量的序列，
+
+或对于128维向量的可变长度序列为“（None，128）”。
+
+https://blog.csdn.net/weixin_49346755/article/details/124267879
+
+```python
+# 一维卷积层，输出形状为(None, 16, 8)，定义input_shape作为第一层
+tf.keras.layers.Conv1D(8, 5, activation="relu", input_shape=(20, 1))
+"""
+ filters: 过滤器：整数，输出空间的维度（即卷积中输出滤波器的数量）
+ kernel_size: 单个整数的整数或元组/列表，指定1D卷积窗口的长度。
+ activation: 要使用的激活功能。激活函数
+ strides: 步长，默认为1.
+ padding: 表示填充方式，默认为VALID，也就是不填充。
+ kernel_initializer: “内核”权重矩阵的初始化器(参见“keras.initizers”）。
+ use_bias: 表示是否使用偏置矩阵，默认为True
+ bias_initializer: 表示使用的偏置矩阵。
+ 
+ Input shape:
+    3D tensor with shape: `(batch_size, steps, input_dim)`
+
+"""
+# regularizers.l2(0.01) L2正则化(L2正则化因子)。
+Con1 = layers.Conv1D(64, 3, activation='relu', kernel_regularizer=regularizers.l2(0.01))(BN)
+```
+
 ### 输入与输出
 
 卷积层的输入通常是一个张量，其形状为(batch_size, input_length, input_channels)，其中batch_size表示输入的样本数量，input_length表示输入序列的长度，input_channels表示输入序列每个位置上的特征维度数量。
@@ -170,7 +274,7 @@ Dropout 层的原理很简单：它在训练过程中随机选择一部分神经
 
 Dropout 的实现方式是，在前向传播过程中，对于每个神经元的输出，以概率 p 将其置为0，以概率 1-p 将其保留。在反向传播时，被置为0的神经元对损失函数的贡献为0，**因此不会对参数更新产生影响**。
 
-这样，通过在训练过程中随机地舍弃一些神经元，可以有效地防止模型过拟合，并提高模型的泛化能力。
+这样，通过在训练过程中随机地舍弃一些神经元，可以有效地防止模型过拟合，并提高模型的泛化能力。只会在训练fit时才会起作用，随机设定输入的值x的某一维=0，这个概率为输入的百分数 ，训练fit才有效。**在模型预测(predict)时，不生效，所有神经元均保留也就是不进行dropout。**
 
 >  Dropout 是在训练过程中以一定概率随机丢弃一些神经元，可以看作是模型集成中的一种方法。在模型集成中，每个模型都相当于在训练过程中随机从原始网络中丢弃一些神经元，从而得到一组不同的子模型。最终的预测结果是这些子模型的预测结果的平均值或投票结果。
 >
@@ -186,7 +290,11 @@ Dropout 的实现方式是，在前向传播过程中，对于每个神经元的
 
 需要注意的是，`layers.Dropout`**通常应该在激活函数之前使用**，这样才能在不丢失任何信息的情况下减少过拟合。同时，`rate`的取值需要根据实际情况来确定，**通常在0.2到0.5之间**。
 
+```python
+Drop1 = layers.Dropout(0.2)(Con1) # 0.2就表示随机丢掉20%的神经元不激活。
+```
 
+https://blog.csdn.net/weixin_43290383/article/details/121601340
 
 # MaxPooling1D
 
@@ -223,6 +331,18 @@ Dropout 的实现方式是，在前向传播过程中，对于每个神经元的
 `MaxPooling1D`的工作原理是将输入的一维数据划分为不重叠的窗口，并在每个窗口上执行最大值操作。例如，对于输入序列`[1, 2, 4, 3, 1, 5]`，假设`pool_size=2`，则`MaxPooling1D`会将其划分为`[[1, 2], [4, 3], [1, 5]]`三个窗口，然后在每个窗口上找到最大值，输出结果为`[2, 4, 5]`。
 
 最大值池化层常用于卷积神经网络中，可以减少参数数量和计算复杂度，同时可以提高模型的鲁棒性和泛化能力。
+
+```python
+layers.MaxPooling1D(pool_size=(3))(Drop1)
+"""
+参数
+pool_size：整数，池化窗口大小
+strides：整数或None，下采样因子，例如设2将会使得输出shape为输入的一半，若为None则默认值为pool_size。
+padding：‘valid’或者‘same’
+输入shape：形如（samples，steps，features）的3D张量
+输出shape：形如（samples，downsampled_steps，features）的3D张量
+"""
+```
 
 ### 输入与输出
 
@@ -263,6 +383,52 @@ $y = f(Wx + b)$
 - `bias_constraint`：偏置项的约束方法。
 
 在深度学习中，`layers.Dense`层通常被用作神经网络的隐藏层或输出层，能够提取输入数据的高阶特征并输出对应的预测结果。
+
+激活函数： softmax多分类https://blog.51cto.com/u_15483653/4939587
+
+　　**activations类**保存了各种激活函数
+
+　　**activations类**的方法：
+
+　　　　**elu()**: 指数线性单位；
+
+　　　　**exponential()**: 指数激活函数；
+
+　　　　**get()**
+
+　　　　**hard_sigmoid()**: Hard sigmoid 激活函数；
+
+　　　　**linear()**: 线性激活函数；
+
+　　　　**relu()**: relu激活函数；
+
+　　　　**selu()**: SELU激活函数；
+
+　　　　**serialize()**
+
+　　　　**sigmoid()**: Sigmoid 激活函数；
+
+　　　　**softmax()**: softmax 激活函数；
+
+　　　　**softplus()**: Softplus 激活函数。
+
+　　　　**softsign()**：
+
+　　　　**tanh()**：
+
+```python
+layers.Dense(Pool2.shape[2], activation='softmax')(Pool2)
+"""
+units：大于0的整数，代表该层的输出维度。
+use_bias：布尔值，是否使用偏置项
+kernel_initializer：权值初始化方法，为预定义初始化方法名的字符串，或用于初始化权重的初始化器。
+bias_initializer：偏置向量初始化方法，为预定义初始化方法名的字符串，或用于初始化偏置向量的初始化器。
+regularizer：正则项，kernel为权重的、bias为偏执的，activity为输出的
+constraints：约束项，kernel为权重的，bias为偏执的。
+activation：激活函数，为预定义的激活函数名（参考激活函数），或逐元素（element-wise）的Theano函数。如果不指定该参数，将不会使用任何激活函数（即使用线性激活函数：a(x)=x）
+input_dim：该层输入的维度
+"""
+```
 
 # multiply 
 
@@ -404,6 +570,35 @@ LSTM的输出可以是**它的最终状态（最后一个时间步的隐藏状�
 - `return_sequences`: 可以控制LSTM的输出形式。如果设置为True，则输出每个时间步的LSTM的输出，如果设置为False，则只输出最后一个时间步的LSTM的输出。因此，return_sequences的默认值为False，如果需要输出每个时间步的LSTM的输出，则需要将其设置为True。
 
 这些参数的不同设置将直接影响到 LSTM 层的输出和学习能力。需要根据具体的应用场景和数据特点进行选择和调整。
+
+```python
+
+tf.keras.layers.LSTM(
+units,
+activation=“tanh”,
+recurrent_activation=“sigmoid”, #用于重复步骤的激活功能
+use_bias=True, #是否图层使用偏置向量
+kernel_initializer=“glorot_uniform”, #kernel权重矩阵的 初始化程序，用于输入的线性转换
+recurrent_initializer=“orthogonal”, #权重矩阵的 初始化程序，用于递归状态的线性转换
+bias_initializer=“zeros”, #偏差向量的初始化程序
+unit_forget_bias=True, #则在初始化时将1加到遗忘门的偏置上
+kernel_regularizer=None, #正则化函数应用于kernel权重矩阵
+recurrent_regularizer=None, #正则化函数应用于 权重矩阵
+bias_regularizer=None, #正则化函数应用于偏差向量
+activity_regularizer=None, #正则化函数应用于图层的输出（其“激活”）
+kernel_constraint=None,#约束函数应用于kernel权重矩阵
+recurrent_constraint=None,#约束函数应用于 权重矩阵
+bias_constraint=None,#约束函数应用于偏差向量
+dropout=0.0,#要进行线性转换的输入单位的分数
+recurrent_dropout=0.0,#为递归状态的线性转换而下降的单位小数
+return_sequences=False,#是否返回最后一个输出。在输出序列或完整序列中
+return_state=False,#除输出外，是否返回最后一个状态
+go_backwards=False,#如果为True，则向后处理输入序列并返回反向的序列
+stateful=False,#如果为True，则批次中索引i的每个样本的最后状态将用作下一个批次中索引i的样本的初始状态。
+time_major=False,
+unroll=False,#如果为True，则将展开网络，否则将使用符号循环。展开可以加快RNN的速度，尽管它通常会占用更多的内存。展开仅适用于短序列。
+)
+```
 
 # Permute
 
