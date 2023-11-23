@@ -1,1 +1,84 @@
 /深度学习笔记本&案例
+
+# 忽略操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 忽略编辑器和IDE生成的文件
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 忽略编译生成的文件和文件夹
+/build/
+/dist/
+
+# 忽略依赖文件夹
+/node_modules/
+/bower_components/
+
+# 忽略日志文件
+*.log
+
+# 忽略临时文件
+*.tmp
+
+# 忽略系统文件
+.DS_Store
+desktop.ini
+
+# 忽略压缩文件
+*.zip
+*.rar
+*.gz
+
+# 忽略数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# 忽略IDE和编辑器配置文件
+*.swp
+*.swo
+*.swn
+*.bak 
+
+# 忽略生成的文档文件
+#*.html
+#*.pdf
+#*.docx
+
+# 忽略备份文件
+*.bak
+*.backup
+
+# 忽略缓存文件
+.cache/
+
+# 忽略日志文件夹
+/logs/
+
+# 忽略临时文件夹
+/temp/
+/tmp/
+
+# 忽略编译器和构建工具生成的文件
+.gradle/
+.mvn/
+target/
+
+# 忽略Jupyter Notebook生成的文件
+.ipynb_checkpoints/
+
+# 忽略环境配置文件
+.env
+
+# 忽略IDE生成的文件
+*.iml
+
+# 忽略图片缩略图文件夹
+/.thumbnails/
+
+# 忽略本地配置文件
+*.local

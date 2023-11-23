@@ -312,6 +312,8 @@ y_pred = model.predict(X_test)
 
 ### 卷积神经网络
 
+CNN非常强大！！ 跳出框框思考！使用一维CNN对表格数据进行特征提取。或者使用DeepInsight（一种将非图像数据转换为图像以用于卷积神经网络架构的方法），将表格数据转换为图像，利用 CNN 的优势。
+
 推荐视频：https://www.youtube.com/watch?v=KuXjwB4LzSA&list=RDCMUCYO_jab_esuFRV4b17AJtAw
 
 确定卷积层的最佳数量以及它们对其他参数的影响是一个挑战性的任务，通常需要进行实验和调整来找到最佳的模型架构。
