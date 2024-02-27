@@ -1,10 +1,13 @@
-## 数据增强
+## 图像滤镜
 
-history = model.fit_generator(
-      train_generator,
-      steps_per_epoch=100,
-      epochs=100,
-      validation_data=validation_generator,
-      validation_steps=50)
+### 变暖和冷却过滤器
 
-image generator 
+我们将使用查找表实现我们自己的曲线过滤器。
+
+### 黑白铅笔素描
+
+我们将使用两种图像混合技术，被称为减淡和增强。
+
+### 卡通器
+
+我们将结合一个双边滤波器，一个中值滤波器和自适应阈值

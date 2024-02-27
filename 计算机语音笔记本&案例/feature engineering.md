@@ -1,8 +1,14 @@
-# 特征提取
+音频特征提取在进行分类任务中，特征需要满足两种条件、第一层捕获音频中存在的**广泛或全局信息**，并由系数 S1 反映。第二层捕获音频纹理中的**潜在或隐藏信息**，才能有良好的分类效果，传统的MFCC提供骨架的广泛信息，在更难得任务中MFCC表现得不够好。
 
-当涉及到音频信号处理中的四种特征提取方法：GFCC（Gammatone Frequency Cepstral Coefficients）、IMFCC（Improved Multi-Frequency Cepstral Coefficients）、EMFCC（Enhanced Mel Frequency Cepstral Coefficients）和MFCC（Mel Frequency Cepstral Coefficients），让我们逐个进行详细解释，并提供相应的原理和模板代码。使用库（Spectrogram Analysis FrameWork) `spafe`  (更具业界可以知道最常用的是MFCC，我们只需要用改进的和用Gmamatone的尝试即可)
+在语音信号处理领域，t-f表示法是时频表示法（Time-Frequency Representation）的简称。它是一种将信号在时间和频率两个维度上进行分析和表示的方法。
 
-## MFCC（Mel Frequency Cepstral Coefficients）：
+传统的时域表示法只能展示信号在时间上的变化情况，而无法提供关于频率的信息。频域表示法（如傅里叶变换）则能够展示信号在频率上的分布，但无法提供时间上的信息。为了同时获得时间和频率的信息，t-f表示法应运而生。
+
+t-f表示法通过在时间和频率上进行窗口变换，将信号转换为**时频矩阵或时频图**。在时频矩阵中，时间沿着水平轴，频率沿着垂直轴，而每个时刻和频率位置的数值表示信号在该时刻和频率上的能量或幅度，迄今为止最流行的 t-f 表示法是频谱图和尺度图。
+
+还有各类传统方法：GFCC（Gammatone Frequency Cepstral Coefficients）、IMFCC（Improved Multi-Frequency Cepstral Coefficients）、EMFCC（Enhanced Mel Frequency Cepstral Coefficients）和MFCC（Mel Frequency Cepstral Coefficients），让我们逐个进行详细解释，并提供相应的原理和模板代码。使用库（Spectrogram Analysis FrameWork) `spafe`  (更具业界可以知道最常用的是MFCC，我们只需要用改进的和用Gmamatone的尝试即可)
+
+### MFCC（Mel Frequency Cepstral Coefficients）：
 
 - 原理：MFCC 是一种常见的音频特征提取方法，它模拟人类听觉系统对声音的感知。主要包含以下步骤：
 
@@ -31,7 +37,7 @@
    print(mfcc)
    ```
 
-## IMFCC（Improved Multi-Frequency Cepstral Coefficients）：
+### IMFCC（Improved Multi-Frequency Cepstral Coefficients）：
 
 - IMFCC在MFCC的基础上进行了一些改进，以提高其表达能力和鲁棒性。
 
@@ -75,7 +81,7 @@
    print(imfcc)
    ```
 
-## EMFCC（Enhanced Mel Frequency Cepstral Coefficients）：
+### EMFCC（Enhanced Mel Frequency Cepstral Coefficients）：
 
 - 原理：EMFCC是对MFCC的增强版本，它在MFCC的基础上引入了额外的增强参数，主要包括以下步骤：
 
@@ -147,8 +153,7 @@ EMFCC的改进主要包括以下方面：
 >
 > 总结起来，Delta特征是通过计算音频特征在时间上的差异来捕捉音频动态变化的衍生特征。它可以帮助提取音频信号中的快速变化特征。Delta-Delta则是对Delta特征再次进行差分计算得到的二阶差分特征。
 
-
-## GFCC（Gammatone Frequency Cepstral Coefficients）：
+### GFCC（Gammatone Frequency Cepstral Coefficients）：
 
 - 原理：GFCC是一种**基于Gammatone滤波器的特征提取方法**，它模拟人耳的听觉特性对声音的感知，它结合了组延迟和倒谱分析的概念，可以有效地捕捉音频信号中的时变频谱特征。主要包含以下步骤：
 
@@ -228,7 +233,7 @@ EMFCC的改进主要包括以下方面：
 
 请确保你已经安装了`gammatone`和`librosa`库以运行上述代码示例。
 
-## 小波变换
+### 小波变换
 
 小波变换（Wavelet Transform）是一种用于信号和图像处理的数学工具，具有时频**局部化**的特性。与傅里叶变换（Fourier Transform）相比，小波变换可以提供更好的时域和频域的局部分析能力，能够捕捉信号中的**短时变化**。
 

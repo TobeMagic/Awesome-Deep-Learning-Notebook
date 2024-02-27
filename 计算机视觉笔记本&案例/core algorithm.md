@@ -1,3 +1,10 @@
+Imagenet  Leaderboard 地址：https://www.paperswithcode.com/sota/image-classification-on-imagenet
+如上展示了到目前的分类任务 SOTA 效果演进，真正有大幅度提升的方法很多都在 13 到 15 年提出，例如 Inception 结构、残差模块等等。
+
+<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/image-20240227142432956.png" alt="image-20240227142432956" style="zoom: 33%;" />
+
+`建议阅读文章`：https://www.jiqizhixin.com/articles/2019-08-08-4
+
 ![source: https://www.researchgate.net/figure/VGG16-VGG19-Inception-V3-Xception-and-ResNet-50-architectures_fig1_330478807](core algorithm.assets/8jt5Is.png)
 
 ![accuracy vs computational complexity](core algorithm.assets/m7r4UA.png)
@@ -87,13 +94,19 @@ VGG神经网络是由牛津大学的研究团队于2014年提出的一个深度�
 
 # Inception系列算法
 
+必读文章(未读完): https://zhuanlan.zhihu.com/p/50754671
+https://blog.csdn.net/Biyoner/article/details/89848007
+
 >  "Inception" 这个名称源自于电影《盗梦空间》（Inception）。
 >
 >  "Inception" 这个词在英语中的意思是“开始”或“初始阶段”。在电影中，主要角色们进行了一种名为“植入梦境”的行动，意图在目标人物的潜意识中植入一个想法。这个行动涉及到多个嵌套的梦境层级，每个层级都有自己的规则和现实。这种层级嵌套的概念与深度学习中的多层网络结构有一定的类比。
 >
 >  取名为"Inception"便是因为这个网络模块的结构和电影《盗梦空间》中的植入梦境行动有一定的类似之处：多层级的结构和信息的融合。这个名称的选择可以看作是对电影中的概念的一种致敬，并将其与深度学习领域中的网络模块联系在一起。
 
-Inception v1(GoogLeNet, 2014) --> Inception v2(BN-Inception) --> Inception v3 --> Inception v4(Inception-ResNet) --> Xception(2016) , 在ImageNet上 Top1 和 Top5 准确率如下图：
+时间顺序：
+Inception v1(GoogLeNet, 2014) --> Inception v2(BN-Inception) --> Inception v3 --> Inception v4(Inception-ResNet) --> Xception(2016) 
+
+在ImageNet上 **Top1 和 Top5 准确率**如下图：
 
 <img src="core algorithm.assets/GU8eTe.png" alt="https://arxiv.org/abs/1810.00736" style="zoom:150%;" />
 
@@ -113,69 +126,32 @@ Inception v1(GoogLeNet, 2014) --> Inception v2(BN-Inception) --> Inception v3 --
 相关学习资料：
 
 掘金： https://juejin.cn/post/7064940823146102820  详解Inception结构：从Inception v1到Xception
+https://zhuanlan.zhihu.com/p/50754671 Inception模型进化史：从GoogLeNet到Inception-ResNet
 
-## Inception-v1
 
-Inception-v1，也被称为GoogLeNet，是Inception系列算法中最早的版本，由Google团队在2014年提出，并夺得了2014年ImageNet竞赛的冠军。它的设计灵感来自于人类视觉系统中的分层处理和多尺度感受野的特性，早期的 Network in Network 架构， 通过模块的堆叠（每个小模块像是一个小型的神经网络），分成多个并行分支。
+
+## GoogLeNet（Inception-v1）
+
+Inception-v1，也被称为GoogLeNet，是Inception系列算法中最早的版本，由Google团队在2014年提出，并夺得了2014年ImageNet竞赛的冠军。它的设计灵感来自于人类视觉系统中的**分层处理和多尺度感受野的特性**，早期的 Network in Network 架构， 通过模块的堆叠（每个小模块像是一个小型的神经网络），分成多个并行分支。
 
 Inception-v1的主要特点和结构如下：
 
-1. Inception模块：Inception-v1引入了Inception模块，用于在不同尺度上捕捉图像的特征。Inception模块采用**多个并行的卷积核和池化层**，并将它们的输出在通道维度上**拼接**起来，从而获得**多尺度的特征表示**。(如下图所示，哲理的核大小其实只是对于感受野的大小，输出的依然是一个卷积核一个序列，滑动步长会影响大小)
+1. Inception模块：Inception-v1引入了**Inception模块(这一个模块封装成层来使用），用于在不同尺度上捕捉图像的特征**。Inception模块采用**多个并行的卷积核和池化层**，并将它们的输出在通道维度上**拼接**起来，从而获得**多尺度的特征表示**。(如下图所示，这里的核大小其实便是感受野的大小)。根据设计目的，初始版本其中包含几种不同大小的卷积，包含1x1卷积，3x3卷积，5x5卷积，3x3池化(**使用这样的尺寸不是必需的，可以根据需要进行调整**)。这样，网络中每一层都能学习到**“稀疏”（3x3、5x5）或“不稀疏”（1x1）的特征**，既**增加了网络的宽度，也增加了网络对尺度的适应性**。最终通过deep concat在每个block后合成特征，**获得非线性属性**. 如下图所示
 
-   <img src="core algorithm.assets/inception_module.png" alt="018 CNN Inception Network - Inception Module - Master Data Science" style="zoom:50%;" />
+   <img src="https://miro.medium.com/v2/resize:fit:1238/1*KJdrI051FM5HE3OGBQe8lA.png" alt="Understanding Architecture Of Inception Network & Applying It To A  Real-World Dataset | by Alifia Ghantiwala | Medium" style="zoom: 80%;" />
+
+   >   虽然这样提高了性能，但是网络的计算量实在是太大了，因此GoogLeNet借鉴了Network-in-Network的思想，使用1x1的卷积核实现降维操作(即先采用1x1卷积将特征的channel数降低，这种“瓶颈层”设计也是后面很多网络所常采用的，如ResNet网络。)，以此来减小网络的参数量，改进后的Inception模块如下图所示：
+   >
+   > <img src="core algorithm.assets/inception_module.png" alt="018 CNN Inception Network - Inception Module - Master Data Science" style="zoom: 33%;" />
+
+   
 
 2. 1x1卷积（**逐点卷积**）：是Inception模块的特色，此时卷积相当于对每个特征值的数据点通过了一个dense，能够将输入**张量**通道的信息混合在一起，但不会**混合空间的特征**，有助于**区分开通道特征学习和空间特征学习**，尤其是在`假设每个通道在跨越空间是强相关，不同通道可能不高度相关的情况下`，并且其害减少特征图的维度和参数数，同时也起到了特征降维和特征融合的作用。
 
-3. 辅助分类器：直接增加深度会导致浅层出现严重的梯度消失现象，GoogLeNet引入了**辅助分类器（Auxiliary Classifier）**，在浅层和中间层插入，**来增强回传时的梯度信号，引导浅层学习到更具区分力的特征。**这些辅助分类器在训练过程中引入了额外的监督信号，帮助网络更好地学习特征，同时在测试阶段被丢弃。
-
-   >  在Inception网络中，辅助分类器（Auxiliary Classifier）是指在网络的中间层添加的额外分类器。它的主要目的是通过提供额外的梯度信号来帮助网络更好地学习和训练。
-   >
-   >  辅助分类器的添加可以有助于解决深度神经网络中的梯度消失问题。在深层网络中，梯度在反向传播过程中可能会逐渐衰减，导致较早的层面难以得到有效的梯度信号进行更新。通过添加辅助分类器，可以在中间层获取额外的梯度信号，使得较早的层可以更好地进行更新。
-   >
-   >  辅助分类器通常与主分类器一起使用，主分类器位于网络的最后一层。辅助分类器和主分类器具有相同的目标，即对输入进行分类。在网络的训练过程中，辅助分类器的预测结果和主分类器的预测结果都会被用于计算损失函数，从而进行反向传播和参数更新。
-   >
-   >  以下是在Keras中实现Inception网络中辅助分类器的模板代码：
-   >
-   >  ```python
-   >  from keras.models import Model
-   >  from keras.layers import Input, Conv2D, MaxPooling2D, Dropout, Flatten, Dense, concatenate
-   >  
-   >  # 输入
-   >  input_shape = (224, 224, 3)
-   >  inputs = Input(shape=input_shape)
-   >  
-   >  # 辅助分类器
-   >  auxiliary = Conv2D(filters=128, kernel_size=(1, 1), activation='relu')(inputs)
-   >  auxiliary = MaxPooling2D(pool_size=(2, 2))(auxiliary)
-   >  auxiliary = Dropout(0.5)(auxiliary)
-   >  auxiliary = Flatten()(auxiliary)
-   >  auxiliary = Dense(units=1024, activation='relu')(auxiliary)
-   >  auxiliary = Dropout(0.5)(auxiliary)
-   >  auxiliary = Dense(units=num_classes, activation='softmax')(auxiliary)
-   >  
-   >  # 主分类器
-   >  x = Conv2D(filters=64, kernel_size=(1, 1), activation='relu')(inputs)
-   >  x = MaxPooling2D(pool_size=(2, 2))(x)
-   >  x = Conv2D(filters=192, kernel_size=(3, 3), activation='relu')(x)
-   >  x = MaxPooling2D(pool_size=(2, 2))(x)
-   >  x = Dropout(0.5)(x)
-   >  x = Flatten()(x)
-   >  x = Dense(units=2048, activation='relu')(x)
-   >  x = Dropout(0.5)(x)
-   >  main_output = Dense(units=num_classes, activation='softmax')(x)
-   >  
-   >  # 创建模型
-   >  model = Model(inputs=inputs, outputs=[main_output, auxiliary])
-   >  
-   >  # 编译模型
-   >  model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-   >  ```
-   >
-   >  在这个模板代码中，我们使用了Keras的函数式API来构建一个包含辅助分类器的Inception网络。通过使用`Model`类，我们定义了一个具有多个输入和多个输出的模型。其中，`inputs`是网络的输入张量，`auxiliary`是辅助分类器的输出，`main_output`是主分类器的输出。
-   >
-   >  在模型的训练过程中，通过指定多个损失函数和多个评估指标，我们可以同时优化辅助分类器和主分类器。在实际训练中，可以根据具体任务和实验需求来调整模型的结构和参数设置。
-
-4. 网络结构：Inception-v1具有22层的深度，由多个堆叠的Inception模块组成。网络的输入是224x224大小的图像，最后通过**全局平均池化**和softmax分类器进行分类。
+3. 辅助分类器：直接增加深度会导致浅层出现严重的梯度消失现象，GoogLeNet引入了**辅助分类器（Auxiliary Classifier）**，**在浅层和中间层插入**，**来增强回传时的梯度信号，引导浅层学习到更具区分力的特征。**这些辅助分类器在训练过程中引入了额外的监督信号，帮助网络更好地学习特征，同时**在测试阶段被丢弃**。
+   这是一种“深度监督”策略，文中说是为了避免梯度消失问题，也是一种正则化手段。
+   
+4. 网络结构：Inception-v1具有22层的深度，由多个堆叠的Inception模块组成。网络的输入是224x224大小的图像，最后通过**全局平均池化**和softmax分类器进行分类。最终的卷积层之后采用Global Average Pooling层，而不是全连接层，这有助于减少参数量。
 
 <img src="core algorithm.assets/0q5eMDjUHKqEyo7qY.png" alt="img" style="zoom:200%;" />
 
@@ -191,11 +167,19 @@ Inception-v1的创新设计使得它在当时取得了很好的性能，同时�
    - 这是PyTorch官方提供的教程，介绍了如何使用PyTorch进行迁移学习，其中包括使用预训练的Inception-v1模型进行图像分类任务。
 4. https://medium.com/@AnasBrital98/googlenet-cnn-architecture-explained-inception-v1-225ae02513fd GoogLeNet CNN Architecture Explained (Inception V1) : 代码与原理
 
-通过阅读论文和实践相关教程，您将深入了解Inception-v1算法的细节和应用方法。
+## Inception-v2
+
+在Inception-v2网络，作者引入了BN层，所以Inception-v2其实是BN-Inception，这点Google在Inception-v4的paper中进行了说明。目前BN层已经成为了CNN网络最常用的一种策略，采用BN层后，一方面可以使用较大的学习速率，加快收敛速度，另外一方面，BN层具有正则化效应（虽然有一些对BN层的理论分析，但是仍有争议）。
+
+
+
+首先计算特征的mean和var，然后进行归一化，但是为了保证一定的可变度，增加了gamma和beta两个训练参数进行缩放和偏移。在训练过程，还要记录两个累积量：moving_mean和moving_var，它是每个训练step中batch的mean和var的指数加权移动平均数。在inference过程，不需要计算mean和var，而是使用训练过程中的累积量。这种训练和测试之间的差异性是BN层最被诟病的，所以后面有一系列的改进方法，如Group Norm等。
 
 ## Inception-v3
 
 Inception-v3是Google于2015年提出的一种深度卷积神经网络模型，用于图像分类和物体识别任务。它在ILSVRC 2015图像分类挑战中取得了优异的成绩。
+
+Inception-v3引入的核心理念是“因子化”（Factorization），主要是将一些较大的卷积分解成几个较小的卷积。比如将一个5x5卷积分解成两个3x3卷积：
 
 <img src="core algorithm.assets/The-architecture-of-Inception-V3-model.ppm" alt="The architecture of Inception-V3 model. | Download Scientific Diagram" style="zoom:50%;" />
 
@@ -256,7 +240,7 @@ Xception 代表极端 Inception（extreme inception），它于2016年由Google�
 
 # ResNet
 
-ResNet，全称为残差网络（Residual Network），是由微软研究院于2015年提出的一种深度卷积神经网络模型。它在图像分类、目标检测和语义分割等计算机视觉任务中取得了重大突破。
+ResNet，全称为残差网络（Residual Network），是由微软研究院何凯明于2015年提出的一种深度卷积神经网络模型。它在图像分类、目标检测和语义分割等计算机视觉任务中取得了重大突破。
 
 ![The ResNet convolutional neural network architecture. (A) The input... |  Download Scientific Diagram](core algorithm.assets/The-ResNet-convolutional-neural-network-architecture-A-The-input-signal-plus.jpg)
 
@@ -264,7 +248,7 @@ ResNet，全称为残差网络（Residual Network），是由微软研究院于2
 
 **1. 残差学习：**
 
-- ResNet引入了“残差学习”这一关键思想，旨在解决训练非常深层次神经网络时遇到的梯度消失或梯度爆炸问题。
+- **ResNet引入了“残差学习”这一关键思想**，旨在解决训练非常深层次神经网络时遇到的梯度消失或梯度爆炸问题。
 - 通过使用跳跃连接（即直接将输入添加到输出）来构建残差块，使得信息可以更容易地从底层传递到高层。
 
 **2. 网络架构：**
@@ -292,8 +276,6 @@ ResNet，全称为残差网络（Residual Network），是由微软研究院于2
 1. 原始文献：Deep Residual Learning for Image Recognition (https://arxiv.org/abs/1512.03385)
 2. TensorFlow官方教程: Transfer Learning and Fine-Tuning with TensorFlow Hub (https://www.tensorflow.org/tutorials/images/transfer_learning_with_hub)
 3. PyTorch官方教程: Fine-tuning Torchvision Models (https://pytorch.org/tutorials/beginner/finetuning_torchvision_models_tutorial.html)
-
-这些资源将提供更详细的说明、示例代码和实践指导，以帮助你更好地理解和应用ResNet网络在机器学习中的应用。
 
 # DenseNet
 

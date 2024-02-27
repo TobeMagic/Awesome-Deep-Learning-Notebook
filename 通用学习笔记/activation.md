@@ -1,4 +1,12 @@
-始终关注新论文并探索论坛中提到的内容之外的内容。调整激活函数（尝试swish而不是 ReLU）和优化器（尝试AdaBelief而不是 Adam 等）之类的小东西可能只会从模型中挤出一些性能。
+始终关注**新论文并探索论坛中提到的内容之外的内容**。调整激活函数（尝试swish而不是 ReLU）和优化器（尝试AdaBelief而不是 Adam 等）之类的小东西可能只会从模型中挤出一些性能。
+
+## 激活函数的饱和性质概念
+
+饱和性质的激活函数是指在输入数据较大或较小时，激活函数的导数趋近于0，导致梯度消失或爆炸。这种情况下，神经网络可能会面临训练困难、收敛缓慢等问题。
+
+常见的饱和性质的激活函数有Sigmoid函数和双曲正切（Tanh）函数。它们在输入接近极端值时，导数接近于0。对于Sigmoid函数而言，在输入非常大或非常小时，输出值会趋向于1或-1，并且导数几乎为0；对于Tanh函数而言，在输入非常大或非常小时，输出值也会趋向于1或-1，并且导数同样几乎为0。
+
+相比之下，不饱和性质的激活函数没有上述问题并具有更好的表达能力。比如ReLU（Rectified Linear Unit）和 Leaky ReLU
 
 ## 激活函数
 
@@ -6,7 +14,7 @@
 
 Softmax函数是一种常用的激活函数，常用于多类别分类问题中。它将一组实数值转换为概率分布，使得每个类别的预测概率落在0到1之间，并且所有类别的概率之和为1。
 
-Softmax函数的数学表达式如下：
+Softmax函数的数学表达式如下：	
 
 ![image-20230627213851549](activation.assets/image-20230627213851549.png)
 
@@ -19,6 +27,14 @@ Softmax函数的特点如下：
 3. 鲁棒性：Softmax函数对较大或较小的输入值具有鲁棒性，即在输入值变化时，输出的概率分布相对稳定。
 
 在多类别分类任务中，通常将模型的最后一层使用Softmax激活函数，以获得每个类别的预测概率。然后，可以根据最高概率或一定阈值来确定最终的类别预测。
+
+### Tanh
+
+使用tanh作为激活函数，一定程度上可以避免梯度消失和梯度爆炸的问题。
+
+如果权重值较大或者较小，那么在反向传播时，梯度值会非常大或者非常小，导致梯度爆炸或者消失的情况。而**tanh函数的导数范围在[-1, 1]之间，可以抑制梯度的放大和缩小，从而避免了梯度爆炸和消失的问题(RNN遇到的问题）**。此外，tanh函数在输入为0附近的时候输出接近于线性，使得网络更容易学习到线性相关的特征。另外，tanh 函数具有对称性，在处理序列数据时能够更好地捕捉序列中的长期依赖关系。
+
+使用tanh作为LSTM输入层的激活函数是比较常见的做法。
 
 ### Sigmoid
 
@@ -173,7 +189,143 @@ PReLU类似于Leaky ReLU，**但其斜率值是可学习参数而不仅仅是固
 
 总结起来，Parametric ReLU（PReLU）是一种可调节负斜率的激活函数，在深度学习中被广泛使用。它提供了比传统ReLU更丰富的非线性表示能力，并通过学习参数α来适应不同数据和层数。这使得PReLU成为改善神经网络性能和拟合复杂数据集时常用的工具之一。
 
+### GELU
 
+研究者提出了一种新的非线性激活函数，名为**高斯误差线性单元**（Gaussian Error Linear Unit）。 GELU与随机正则化有关，因为它是自适应Dropout的修正预期。 这表明神经元输出的概率性更高，研究者发现，在计算机视觉、自然语言处理和自动语音识别等任务上，使用GELU激活函数的模型性能与使用RELU或者ELU的模型相当或者超越了它们。
 
-## 优化器
+为了避免深度神经网络只作为一种深度线性分类器，必须要加入激活函数以希望其拥有非线性拟合的能力，其中，ReLU就是一个较好的激活函数。而同时为了避免其过拟合，又需要通过加入正则化来提高其泛化能力，其中，Dropout就是一种主流的正则化方式，而zoneout是Dropout的一个变种。而GELU通过来自上面三者的灵感，希望**在激活中加入正则化的思想**。
 
+> ReLU和Dropout都会返回一个神经元的输出，其中，ReLU会确定性的将输入乘上一个0或者1，Dropout则是随机乘上0。而GELU也是通过将输入乘上0或1来实现这个功能，但是输入是乘以0还是1，**是在同时取决于输入自身分布的情况下随机选择的。**换句话说，是0还是1取决于当前的输入有多大的概率大于其余的输入。
+
+> 源码中的GELU
+
+在google-research/bert/modeling.py中的GELU，是采用近似的方式计算：
+
+```python
+def gelu():
+cdf = 0.5 * (1.0 + tf.tanh((np.sqrt(2 / np.pi) * (x + 0.044715 * tf.pow(x, 3)))))
+      return x * cdf
+```
+
+而在pretrained-BERT-pytorch/modeling.py中，已经有了精确的计算方式：
+
+```python
+def gelu(x):
+    """Implementation of the gelu activation function.
+        For information: OpenAI GPT's gelu is slightly different (and gives slightly different results):
+        0.5 * x * (1 + torch.tanh(math.sqrt(2 / math.pi) * (x + 0.044715 * torch.pow(x, 3))))
+        Also see https://arxiv.org/abs/1606.08415
+    """
+    return x * 0.5 * (1.0 + torch.erf(x / math.sqrt(2.0)))
+```
+
+其注释也说明了GPT也是近似的计算方式。
+
+参考文章：
+https://zhuanlan.zhihu.com/p/349492378
+
+### Gumbel-Softmax
+
+Gumbel-Softmax算法是一种用于近似离散采样的方法，特别适用于离散化的深度学习模型。它基于Gumbel分布和Softmax函数的结合，通过引入Gumbel噪声来实现离散采样过程。
+
+> Gumbel分布
+
+首先，我们来介绍Gumbel分布。Gumbel分布是一种连续型的分布，它的概率密度函数（PDF）定义如下：
+
+$$
+f(x) = \frac{1}{\beta} \exp\left(-\frac{x-\mu}{\beta} - \exp\left(-\frac{x-\mu}{\beta}\right)\right)
+$$
+
+其中，$\mu$ 是分布的位置参数，$\beta$ 是分布的尺度参数。
+
+Gumbel分布的关键特性是，它可以通过从两个独立的均匀分布中采样并进行一些变换得到。具体地，如果 $U$ 和 $V$ 是两个独立的服从于 $[0, 1]$ 上均匀分布的随机变量，那么 $X = \mu - \beta \log(-\log(U))$ 就服从于Gumbel分布。
+
+Gumbel-Softmax算法通过将离散变量转化为连续的概率分布来实现离散采样。该算法的核心思想是利用Gumbel分布与Softmax函数的组合，将离散变量的采样问题转化为连续分布的采样问题。
+
+> 其原因就是PQ量化后，特征空间变成了离散的。因为**可导必连续**，变量离散化了也就不可导了，没办法反向传播，所以使用了gumble softmax来近似，让loss可导。
+
+给定一个离散变量 $x$，我们希望对其进行采样，使得采样结果满足原始离散变量的分布。假设 $x$ 的分布可以用一个多项分布参数化，即 $x \sim \text{Multinomial}(p_1, p_2, \ldots, p_k)$，其中 $p_i$ 是$x$ 取值为 $i$ 的概率。
+
+为了实现采样，我们引入Gumbel噪声，并定义如下的变量：
+
+$$
+G_i = -\log(-\log(U_i))
+$$
+
+其中，$U_i$ 是服从于 $[0, 1]$ 上均匀分布的随机变量，$G_i$ 是服从于Gumbel分布的随机变量。
+
+然后，我们通过对 $G_i$ 进行一些变换，得到与离散变量 $x$ 相关的连续变量 $y_i$：
+
+$$
+y_i = \frac{\exp((\log(p_i) + G_i)/\tau)}{\sum_{j=1}^k \exp((\log(p_j) + G_j)/\tau)}
+$$
+
+其中，$\tau$ 是一个温度参数，控制了采样的平滑程度。
+
+最后，我们可以使用 $y_i$ 进行近似离散采样，将连续的概率分布转化为离散的采样结果。
+
+**数学推导**
+
+下面是对Gumbel-Softmax算法的数学推导：
+
+我们希望通过Gumbel-Softmax算法来近似采样离散变量 $x$，其中 $x \sim \text{Multinomial}(p_1, p_2, \ldots, p_k)$。
+
+首先，我们定义 $G_i$ 如上所述：
+
+$$
+G_i = -\log(-\log(U_i))
+$$
+
+然后，我们对连续变量 $y_i$ 进行变换：
+
+$$
+y_i = \frac{\exp((\log(p_i) + G_i)/\tau)}{\sum_{j=1}^k \exp((\log(p_j) + G_j)/\tau)}
+$$
+
+我们可以通过对 $y_i$ 进行求导，来获得关于 $y_i$ 的梯度信息。
+
+$$
+\begin{align*}
+\frac{\partial y_i}{\partial (\log(p_j) + G_j)} &= \frac{\partial}{\partial (\log(p_j) + G_j)}\left(\frac{\exp((\log(p_i) + G_i)/\tau)}{\sum_{j=1}^k \exp((\log(p_j) + G_j)/\tau)}\right) \\
+&= \frac{\exp((\log(p_i) + G_i)/\tau)}{\sum_{j=1}^k \exp((\log(p_j) + G_j)/\tau)} \left(\delta_{ij} - \frac{\exp((\log(p_j) + G_j)/\tau)}{\sum_{j=1}^k \exp((\log(p_j) + G_j)/\tau)}\right) \\
+&= y_i(\delta_{ij} - y_j)
+\end{align*}
+$$
+
+其中，$\delta_{ij}$ 是克罗内克（Kronecker）符号，当 $i=j$ 时取值为1，否则为0。
+
+通过求导信息，我们可以使用反向传播算法来训练基于Gumbel-Softmax的模型。
+
+以下是一个使用Python实现Gumbel-Softmax算法的经典案例：
+
+```python
+import torch
+import torch.nn as nn
+
+class GumbelSoftmax(nn.Module):
+    def __init__(self, tau=1.0):
+        super(GumbelSoftmax, self).__init__()
+        self.tau = tau
+
+    def forward(self, logits):
+        gumbel_noise = -torch.log(-torch.log(torch.rand_like(logits)))
+        logits_with_noise = (logits + gumbel_noise) / self.tau
+        softmax_output = nn.functional.softmax(logits_with_noise, dim=-1)
+        return softmax_output
+
+# 示例用法
+logits = torch.tensor([1.0, 2.0, 3.0])  # 原始的logits
+gumbel_softmax = GumbelSoftmax(tau=0.5)  # 创建GumbelSoftmax模型，设置温度参数为0.5
+sample = gumbel_softmax(logits)  # 使用GumbelSoftmax进行采样
+print(sample)
+```
+
+在上述示例中，我们首先定义了一个GumbelSoftmax模型，它是一个继承自`nn.Module`的PyTorch模型。在模型的`forward`方法中，我们首先生成Gumbel噪声，并将其与原始的logits相加。然后，对相加后的结果进行Softmax操作，得到最终的采样结果。
+
+**相关学习资源**
+
+以下是一些关于Gumbel-Softmax算法的学习资源：
+
+1. Jang, E., Gu, S., & Poole, B. (2017). Categorical reparameterization with Gumbel-Softmax. arXiv preprint arXiv:1611.01144.
+2. Maddison, C. J., Mnih, A., & Teh, Y. W. (2016). The concrete distribution: A continuous relaxation of discrete random variables. arXiv preprint arXiv:1611.00712.
+3. Gumbel-Softmax的PyTorch官方文档：https://pytorch.org/docs/stable/generated/torch.nn.functional.gumbel_softmax.html

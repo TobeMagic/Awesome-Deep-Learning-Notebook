@@ -1,14 +1,51 @@
+# 深度学习前言
+
+深度学习算法是一类基于生物学对人脑进一步认识，将神经-中枢-大脑的工作原理设计成一个不断迭代、不断抽象的过程，以便得到最优数据特征表示的机器学习算法；该算法从原始信号开始，先做**低层抽象**，然后逐渐向**高层抽象迭代**，由此组成深度学习算法的基本框架。
+
+> AI发展困难点
+
+在AI发展过程中遇到的几大困难：
+
+1）机器需要学习/理解世界的运行规律（包括物理世界、数字世界、人……以获得一定程度的常识）
+
+2）机器需要学习大量背景知识（通过观察和行动）
+
+3）机器需要理解世界的状态（以做出精准的预测和计划）
+
+4）机器需要更新并记住对世界状态的估测（关注重大事件，记住相关事件）
+
+5）机器需要逻辑分析和规划（预测哪些行为能让世界达到目标状态）
+
+> 其中最大挑战之一就是**如何让机器拥有常识**——即让机器获得填充空白的能力。比如“John背起包来，离开了房间”，由于人类具备常识，因此我们能够知道John在这个过程中需要站起来，打开房门，走出去——他不会是躺着出去的，也不会从关着的门出去，可机器并不知道这一点。又或者我们即使只看到了半张人脸也能认出那人是谁，因为人类常识里左右脸都是通常长得差不多，但机器同样不具备这种能力。
+
+对于一个AI系统来说，**预测+规划=逻辑分析（Predicting + Planning = Reasoning）**。如果想要让机器能够了解并且预测世界的规律，有以下几种方案。
+
+1. 强化学习（Reinforcement Learning）需要建立一个世界模拟器（World Simulator），模拟真实世界的逻辑、原理、物理定律等。不过真实世界太过复杂，存在大量的表征学习参数，使得机器学习的计算量相当冗余，这在有限的时间内无法学习到成千上亿的参数，需要耗费大量的资源。
+2. 无监督学习需要机器处理大量没有标记的数据，就像给它一堆狗的照片，却不告诉它这是一条狗。机器需要自己找到区分不同数据子集、集群、或者相似图像的办法，有点像婴儿学习世界的方式。
+3. 无监督/预测学习可以让机器获得常识，但现在我们常用的监督学习并做不到这一点。从本质上来说，在无监督学习方面，生物大脑远好于我们的模型。
+
+# 核心模型架构
+
+下面是核心的深度学习基础模型，其他模型都是基于此叠加构建的
+
+| 模型名称                                           | 主要特点和解决问题                                           | 缺点                                                         |
+| :------------------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+| 多层感知机（Multilayer Perceptron, MLP）           | - 多层感知机是最基本的前馈神经网络模型。<br>- 通过使用多个隐藏层和非线性激活函数，它可以对复杂的非线性关系建模。<br>- 适用于分类和回归问题。 | - 容易过拟合，需要适当的正则化和调参来避免。<br>- 对于高维稀疏数据，效果可能不佳。<br>- 对输入数据的缩放敏感。 |
+| 卷积神经网络（Convolutional Neural Networks, CNN） | - CNN适用于处理图像和计算机视觉任务。<br>- 利用卷积层和池化层来捕捉空间结构和局部特征。<br>- 具有参数共享和平移不变性的特性，减少了模型的参数量。<br>- 在许多计算机视觉任务中表现出色，如图像分类、目标检测和图像分割。 | - 对于长距离依赖性的任务，如序列建模，CNN可能不是最佳选择。<br>- 对于输入尺寸变化较大的问题，需要适应性池化或其他方法来处理不同尺寸的输入。 |
+| 循环神经网络（Recurrent Neural Networks, RNN）     | - RNN适用于序列数据建模，如文本和语音。<br>- 具有自连接的隐藏层，可以捕获序列中的时间依赖关系。<br>- 可以处理可变长度的输入序列。<br>- 长短期记忆网络（Long Short-Term Memory, LSTM）和门控循环单元（Gated Recurrent Unit, GRU）是常用的RNN变体。 | - RNN在处理长期依赖性时容易出现梯度消失或梯度爆炸问题。<br>- 训练过程较慢，很难并行化。<br>- 对于较长的序列，内部记忆状态可能会受限制。 |
+|                                                    |                                                              |                                                              |
+
+## 基础核心模型
+
 ### 感知器 (Perceptron) & MLP-BP神经网络 （全连接)
 
-阅读参考文献：
-
-一个非常有趣的讲解 （**感知器是一种单层神经网络，而多层感知器则称为神经网络。**）： https://towardsdatascience.com/what-the-hell-is-perceptron-626217814f53  
+可以先看一个非常有趣的讲解 （**感知器是一种单层神经网络，而多层感知器则称为神经网络。**）： https://towardsdatascience.com/what-the-hell-is-perceptron-626217814f53  
 
 #### 感知器
 
-感知器是神经网络的 Fundamentals
+感知器是神经网络的 Fundamentals，其其实可以作为机器学习的范畴，因为其也算是浅度学习，但是感知器作为深度学习最基本的神经元单元入门，所以放入在当前章节。
 
-在1977年由Frank Roseblatt 所发明的感知器是最简单的ANN架构之一（**线性函数加上硬阈值**，**这里阈值不一定是0**），受在一开始的生物神经元模型启发（`XOR`**问题逻辑问题**），称之为阈值逻辑单元（TLU，threshold logistic unit)  或线性阈	值单元（LTU,linear threshold unit)，其是一个**使用阶跃函数的神经元**来计算，可被用于线性可分二分类任务，也可设置多个感知器输出实现多输出分类以输出n个二进制结果（缺点是各种类别关系无法学习），一般来说还会添加一个偏置特征1来增加模型灵活性。
+在1977年由Frank Roseblatt 所发明的感知器是最简单的ANN架构之一（**线性函数加上硬阈值**（算是广义线性模型），**这里阈值不一定是0**），受在一开始的生物神经元模型启发（`XOR`**问题逻辑问题**），称之为阈值逻辑单元（TLU，threshold logistic unit)  或线性阈	值单元（LTU,linear threshold unit)，其是一个**使用阶跃函数的神经元**来计算，可被用于线性可分二分类任务，也可设置多个感知器输出实现多输出分类以输出n个二进制结果（缺点是各种类别关系无法学习），一般来说还会添加一个偏置特征1来增加模型灵活性。
 
 ![图像](core algorithm.assets/FXo8u7JaQAANoNm.png)
 
@@ -44,7 +81,7 @@
    - 计算预测输出 **y_hat = sign(w * x + b)**，其中 w 是权重向量，x 是输入特征向量，b 是偏置项，并且 sign() 函数表示取符号（正负，二分类为例）。
    - 更新权重和偏置：
       - 如果 **y_hat 等于实际标签 y，则无需更新参数**。
-      - 如果 y_hat 不等于实际标签 y，则根据下面的规则更新参数：
+      - 如果 y_hat 不等于实际标签 y，则根据下面的规则更新参数：（注意这里的更新规则是目标是1，预测结果为0则权重变小，否则变大，已符合sigmoid激励函数）
          - 权重更新规则：w = w + η * (y - y_hat) * x，其中 η 是学习率（控制每次更新的步长）。
          - 偏置更新规则：b = b + η * (y - y_hat)。(偏移)
 
@@ -56,13 +93,15 @@
 
 #####  鸢尾花多分类案例
 
+我们以鸢尾花多分类作为案例讲解
+
 Sci-learn:https://scikit-learn.org/stable/auto_examples/datasets/plot_iris_dataset.html
 
 Wikipedia:https://en.wikipedia.org/wiki/Iris_flower_data_set
 
-![image-20230817123141139](core algorithm.assets/image-20230817123141139.png)
+<img src="core algorithm.assets/image-20230817123141139.png" alt="image-20230817123141139" style="zoom:33%;" />
 
-![image-20230817123152718](core algorithm.assets/image-20230817123152718.png)
+<img src="core algorithm.assets/image-20230817123152718.png" alt="image-20230817123152718" style="zoom:33%;" />
 
 我们从以上的可视化就可以知道，**用Perceptorn分类必然效果不好，因为其线性不可分**。
 
@@ -76,10 +115,11 @@ from sklearn.metrics import accuracy_score
 
 
 class Perceptron:
-    """设计架构
+    """
+    设计架构
     1. 初始化基本超参数
     2. 根据算法模型抽象化权重训练流程
-    3. 训练中细分单个样本训练和预测中细分单个样本预测以实现多样本训练和预测"""
+    3. 训练中细分单个样本训练和预测中细分单个样本预测以实现多样本训练和预测 """
     def __init__(self, learning_rate=0.1, num_epochs=20):
         self.learning_rate = learning_rate
         self.num_epochs = num_epochs
@@ -156,7 +196,7 @@ print(accuary)
 0.8333333333333334
 ```
 
-**使用库**实现感知器分类鸢尾花数据集任务的代码：
+**使用sklearn库**实现感知器分类鸢尾花数据集任务的代码 (perceptron 其实还是算是浅度学习，所以在sklearn中）：
 
 ```python
 from sklearn.linear_model import Perceptron
@@ -641,37 +681,43 @@ tf.keras.layers.Conv2D(
 4. Grossmann, A., & Morlet, J. (1984). Decomposition of Hardy Functions into Square Integrable Wavelets of Constant Shape. SIAM Journal on Mathematical Analysis, 15(4), 723–736.
 5. Mallat, S. (1989). A Theory for Multiresolution Signal Decomposition: The Wavelet Representation. IEEE Transactions on Pattern Analysis and Machine Intelligence, 11(7), 674–693.
 
+#### 预训练卷积神经网络（最佳实践）
+
+代替循环神经网络
+
+在面对没有时间序列结构信息，CNN会更加好用，且更快速
+
+
+
+循环神经网络是将信息存在了隐藏层往后传递，由于这个原因，在处理时序数据中是一个时间步一个时间步的输入，在一百个时间步的情况下，需要先算出前99个时间步才能算出第100个，所以并行能力较差，在计算机性能表示方面较差。同样还是这个原因，在序列比较长的话，长短期记忆较差。在并行上也就有人提出了使用CNN来代替RNN。
+
 ### 循环神经网络
 
-在卷积神经网络和MLP全连接神经网络中，数据点在神经层都是互相独立无联系的，直接输入与相应的参数进行变换，如果要**将数据点的序列或者时间序列进行输入，则需要将整个序列当作一个数据点进行输入**，而在循环神经网络中面对数据中不同的时间时刻或者序列position会有不同的状态，**在形式上也是一个序列整体输入，但不同的是在内部中参数对每个时刻是共享的，每个时刻的数据步依次进行输入，在新的序列中状态被重置**。 timedistribute(dense) 也是同样的思想。
+在卷积神经网络和MLP全连接神经网络中，数据点在神经层都是互相独立无联系的，在输入与输入之间没有保存任何状态。要想处理数据点的序列或时间序列，你需要**向网络同时展示整个序列，即将序列转换成单个数据点**。
+
+> 与此相反，当你在阅读这个句子时，你是一个词一个词地阅读（或者说，眼睛一次扫视一次扫视地阅读），同时会记住之前的内容。这让你能够动态理解这个句子所传达的含义。生物智能以渐进的方式处理信息，同时保存一个关于所处理内容的内部模型，这个模型是根据过去的信息构建的，并随着新信息的进入而不断更新。
+
+循环神经网络（RNN，recurrent neural network）采用同样的原理，**在形式上也是一个序列整体输入，但不同的是在内部中参数对每个时刻是共享的，每个时刻的数据步依次进行输入，在新的序列中状态被重置**。` timedistribute(dense) `(时间序列输入的全连接层）也是同样的思想。
 
 下面是RNN、LSTM和GRU三者的优缺点的比较：
 
 | 模型 | 优点                                                         | 缺点                                                         |
 | ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| RNN  | - 简单的结构和参数<br>- 可以处理序列数据的时间依赖关系<br>- 计算效率较高 | - 难以处理长期依赖关系<br>- 容易遇到梯度消失或梯度爆炸问题   |
-| LSTM | - 能够捕捉和处理长期依赖关系<br>- 通过门控机制控制信息流动<br>- 网络结构相对简单 | - 参数较多，计算开销较大<br>- 可能会出现过拟合问题           |
-| GRU  | - 相对于LSTM，参数更少，计算效率更高<br>- 通过门控机制控制信息流动<br>- 可以捕捉长期依赖关系 | - 可能会失去一些细粒度的时间信息<br>- 对于某些复杂的序列问题，性能可能不如LSTM |
+| RNN  | - 简单的结构和参数<br>- 可以处理序列数据的时间依赖关系<br>- 计算效率较高 | - **难以处理长期依赖关系**<br>- 容易遇到**梯度消失**或**梯度爆炸**问题 |
+| LSTM | - 能够**捕捉和处理长期依赖关系**<br>- 通过门控机制控制信息流动<br>- 网络结构相对简单 | - 参数较多，**计算开销较大**<br>- 可能会出现过拟合问题       |
+| GRU  | - 相对于LSTM，**参数更少，计算效率更高**<br>- 通过门控机制控制信息流动<br>- 可以捕捉长期依赖关系 | - 可能会失去一些细粒度的时间信息<br>- 对于某些复杂的序列问题，性能可能不如LSTM |
 
-这是对RNN、LSTM和GRU三者的一般性优缺点的总结。实际应用中，选择合适的模型取决于具体任务和数据集的特点。有时候，LSTM可能更适合捕捉长期依赖关系，而GRU则具有更高的计算效率。因此，建议在实际应用中根据具体情况选择适合的模型。
+实际应用中，选择合适的模型取决于具体任务和数据集的特点。有时候，LSTM可能更适合捕捉长期依赖关系，而GRU则具有更高的计算效率，这是在深度学习经常遇到的问题，在性能表现得计算效率中的取舍。
 
 ![img](core algorithm.assets/1B0q2ZLsUUw31eEImeVf3PQ.png)
 
-
-
 详细讲解RNN,LSTM,GRU  https://towardsdatascience.com/a-brief-introduction-to-recurrent-neural-networks-638f64a61ff4
 
-#### Recurrent Neural Network (RNN)
-
-递归神经网络是将信息存在了隐藏层往后传递，由于这个原因，在处理时序数据中是一个时间步一个时间步的输入，在一百个时间步的情况下，需要先算出前99个时间步才能算出第100个，所以并行能力较差，在计算机性能表示方面较差。同样还是这个原因，在序列比较长的话，长短期记忆较差。在并行上也就有人提出了使用CNN来代替RNN
-
-
+#### RNN （Recurrent Neural Network）
 
 循环神经网络（Recurrent Neural Network，RNN）是一种用于处理序列数据的神经网络算法。相比于传统的前馈神经网络，RNN引入了**循环连接**，使网络能够对序列中的**时间依赖关系**进行建模。
 
->  RNN 通过单元中的反馈循环实现记忆。这是 RNN 与传统神经网络的主要区别。与信息仅在层之间传递的前馈神经网络相比，反馈循环允许信息在层内传递。
-
-RNN的核心思想是在网络的隐藏层之间引入循环连接，使得网络在处理每个时间步的输入时，不仅依赖当前时间步的输入，还依赖前一个时间步的隐藏状态。这种循环连接的设计使得网络具有记忆性，能够捕捉到序列数据中的长期依赖关系。
+>  RNN的核心思想是在网络的隐藏层之间引入循环连接，使得网络在处理每个时间步的输入时，不仅依赖当前时间步的输入，还依赖前一个时间步的隐藏状态。这种循环连接的设计使得网络具有记忆性，能够捕捉到序列数据中的长期依赖关系。
 
 下面是RNN的算法步骤：
 
@@ -679,7 +725,7 @@ RNN的核心思想是在网络的隐藏层之间引入循环连接，使得网�
 
 公式如下:
 
-![img](core algorithm.assets/10gFfVWuKCjYaYE5_oFy9EQ@2x.png)
+<img src="core algorithm.assets/10gFfVWuKCjYaYE5_oFy9EQ@2x.png" alt="img" style="zoom:50%;" />
 
 1. 初始化参数：
    - 定义输入序列的维度（例如，词向量的维度）和隐藏状态的维度。
@@ -697,68 +743,60 @@ RNN的核心思想是在网络的隐藏层之间引入循环连接，使得网�
    - 使用梯度下降或其他优化算法更新权重矩阵。
 6. 重复步骤2-5直到所有时间步的输入都被处理完毕，或达到指定的训练迭代次数。
 
-
-
 RNN算法的核心是通过循环连接实现对序列数据的建模和预测。它在自然语言处理（NLP）领域广泛应用于语言模型、机器翻译、情感分析等任务，也适用于时间序列数据的预测和生成。
 
 需要注意的是，传统的RNN在处理长期依赖关系时可能会遇到梯度消失或梯度爆炸的问题。为了克服这个问题，改进的RNN变体，如长短期记忆网络（LSTM）和门控循环单元（GRU），被提出并广泛应用。
 
-#### LSTM
+#### LSTM（Long Short Time Memory)
 
 ##### 原理详解(每个神经元)
 
-LSTM（Long Short-Term Memory）是一种常用于处理序列数据的**循环神经网络模型**。LSTM的核心思想是在传递信息的过程中，通过门的控制来选择性地遗忘或更新信息。LSTM中主要包含三种门：输入门（input gate）、输出门（output gate）和遗忘门（forget gate），以及一个记忆单元（memory cell）。
+RNN 的最大问题是，理论上来说，在时刻 t 应该能够记住许多时间步之前见过的信息，但实际上它是不可能学到这种长期依赖的。其原因在于梯度消失问题（vanishing gradient problem），这一效应类似于在层数较多的非循环网络（即前馈网络）中观察到的效应：随着层数的增加，网络最终变得无法训练。Hochreiter、Schmidhuber 和 Bengio 在 20 世纪 90 年代初研究了这一效应的理论原因。LSTM 层和 GRU 层都是为了解决这个问题而设计的。
 
-在LSTM层中，有三个门控单元，即输入门、遗忘门和输出门。这些门控单元在每个时间步上控制着**LSTM单元**如何处理输入和记忆。在每个时间步上，LSTM单元**从输入、前一个时间步的输出和前一个时间步的记忆中**计算出当前时间步的输出和记忆。
+> LSTM 层其背后的长短期记忆（LSTM，long short-term memory）算法由 Hochreiter和 Schmidhuber 在 1997 年开发 ，是二人研究梯度消失问题的重要成果。
 
-在LSTM的每个时间步中，输入$x_t$和前一时刻的隐状态$h_{t-1}$被馈送给门控制器，然后门控制器**根据当前的输入$x_t$和前一时刻的隐状态$h_{t-1}$计算出三种门的权重**，然后将这些权重作用于前一时刻的记忆单元$c_{t-1}$。具体来说，门控制器计算出三个向量：**输入门的开启程度$i_t$、遗忘门的开启程度$f_t$和输出门的开启程度$o_t$，这三个向量的元素值均在[0,1]**之间。
+LSTM 层作为RNN 层的一种变体，它增加了一种携带信息跨越多个时间步的方法。假设有一条传送带，其运行方向**`平行于你所处理的序列`**。序列中的信息可以在任意位置跳上传送带，然后被传送到更晚的时间步，并在需要时原封不动地跳回来。这实际上就是 LSTM 的原理：它**`保存信息以便后面使用，从而防止较早期的信号在处理过程中逐渐消失`**。
 
-然后，使用这些门的权重对前一时刻的记忆单元$c_{t-1}$进行更新，**计算出当前时刻的记忆单元$c_t$**，并**将它和当前时刻的输入$x_t$作为LSTM的输出$y_t$**。最后，将**当前时刻的记忆单元$c_t$和隐状态$h_t$一起作为下一时刻的输入**，继续进行LSTM的计算。
+> 在实现上，LSTM层中有三个门控单元，即输入门、遗忘门和输出门。这些门控单元在每个时间步上控制着LSTM单元如何处理输入和记忆。具体来说，
+>
+> 在每个时间步中，输入$x_t$和前一时刻的隐状态$h_{t-1}$被馈送给门控制器，然后门控制器**根据当前的输入$x_t$和前一时刻的隐状态$h_{t-1}$（即上一时间步的输出）计算出三种门的权重**，然后将这些权重作用于前一时刻的记忆单元$c_{t-1}$。具体来说，门控制器计算出三个向量：**输入门的开启程度$i_t$、遗忘门的开启程度$f_t$和输出门的开启程度$o_t$，这三个向量的元素值均在[0,1]**之间。
+>
+> 通过使用这些门的权重对前一时刻的记忆单元$c_{t-1}$进行更新，**计算出当前时刻的记忆单元$c_t$**，并**将它和当前时刻的输入$x_t$作为LSTM的输出$y_t$**。最后，将**当前时刻的记忆单元$c_t$和隐状态$h_t$一起作为下一时刻的输入**，继续进行LSTM的计算。
+
+
 
 ![img](core algorithm.assets/1tEN1Ziu4VvRAaH9zagN3EQ.png)
 
-如果你对LSTM以及其与反向传播算法之间的详细联系感兴趣，我建议你参考以下资源：
-
-1. "Understanding LSTM Networks" by Christopher Olah: https://colah.github.io/posts/2015-08-Understanding-LSTMs/  强烈推荐！！！ 
-2. TensorFlow官方教程：Sequence models and long-short term memory network (https://www.tensorflow.org/tutorials/text/text_classification_rnn)
-3. PyTorch官方文档：nn.LSTM (https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html)
-4. 详细讲解RNN,LSTM,GRU  https://towardsdatascience.com/a-brief-introduction-to-recurrent-neural-networks-638f64a61ff4
-
-以上资源将为你提供更多关于LSTM及其与反向传播算法结合使用的详细解释、示例代码和进一步阅读材料。
-
-> LSTM 的核心概念在于细胞状态以及“门”结构。**细胞状态相当于信息传输的路径，让信息能在序列连中传递下去。你可以将其看作网络的“记忆”**，记忆门一个控制信号控制门是否应该保留该信息，在实现上通常是乘1或乘0来选择保留或忘记。理论上讲，细胞状态能够将序列处理过程中的相关信息一直传递下去。因此，即使是较早时间步长的信息也能携带到较后时间步长的细胞中来，这克服了短时记忆的影响。信息的添加和移除我们通过“门”结构来实现，“门”结构在训练过程中会去学习该保存或遗忘哪些信息。
-
-LSTM的参数包括输入到状态的权重$W_{xi},W_{hi},b_i$，输入到遗忘门的权重$W_{xf},W_{hf},b_f$，输入到输出门的权重$W_{xo},W_{ho},b_o$，以及输入到记忆单元的权重$W_{xc},W_{hc},b_c$，其中$W$表示权重矩阵，$b$表示偏置向量。在实际应用中，LSTM模型的参数通常需要通过训练来获得，以最小化预测误差或最大化目标函数。
+LSTM的参数包括输入到状态的权重$W_{xi},W_{hi},b_i$，输入到遗忘门的权重$W_{xf},W_{hf},b_f$，输入到输出门的权重$W_{xo},W_{ho},b_o$，以及输入到记忆单元的权重$W_{xc},W_{hc},b_c$，其中$W$表示权重矩阵，$b$表示偏置向量。
 
 ###### a. 遗忘门：Forget Gate
 
 遗忘门的功能是决定应丢弃或保留哪些信息。来自前一个隐藏状态的信息和当前输入的信息同时传递到 sigmoid 函数中去，输出值介于 0 和 1 之间，越接近 0 意味着越应该丢弃，越接近 1 意味着越应该保留。
 
-![在这里插入图片描述](../../../../../../Python全栈开发/人工智能/人工智能笔记本&案例/机器学习笔记本&案例/深度学习笔记本&案例/通用学习笔记/Keras/layers.assets/20210305193619275.gif%23pic_center)遗忘门的计算公式
+![20210305193619275](core%20algorithm.assets/20210305193619275.gif)
+
+遗忘门的计算公式
 
 ![在这里插入图片描述](core algorithm.assets/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3OTI3NzMx,size_16,color_FFFFFF,t_70.png)
 
 ###### b. 输入门：Input Gate
 
-输入门用于更新细胞状态。首先将前一层隐藏状态的信息和当前输入的信息传递到 sigmoid 函数中去。将值调整到 0~1 之间来决定要更新哪些信息。0 表示不重要，1 表示重要。其次还要**将前一层隐藏状态的信息和当前输入的信息传递到 tanh 函数中**去，创造一个新的侯选值向量。最后**将 sigmoid 的输出值与 tanh 的输出值相乘，sigmoid 的输出值将决定 tanh 的输出值中哪些信息是重要且需要保留下来**的
+输入门用于更新细胞状态。首先将前一层隐藏状态的信息和当前输入的信息传递到 sigmoid 函数中去。将值调整到 0~1 之间来决定要更新哪些信息。并**将前一层隐藏状态的信息和当前输入的信息传递到 tanh 函数中**去，创造一个新的侯选值向量。最后**将 sigmoid 的输出值与 tanh 的输出值相乘，sigmoid 的输出值将决定 tanh 的输出值中哪些信息是重要且需要保留下来**的
 
-> 使用tanh作为LSTM输入层的激活函数，一定程度上可以避免梯度消失和梯度爆炸的问题。
+> 使用tanh作为LSTM输入层的激活函数是比较常见的做法。在LSTM中，如果权重值较大或者较小，那么在反向传播时，梯度值会非常大或者非常小，导致梯度爆炸或者消失的情况。而**tanh函数的导数范围在[-1, 1]之间，可以抑制梯度的放大和缩小，从而避免了梯度爆炸和消失的问题(RNN遇到的问题）**。此外，tanh函数在输入为0附近的时候输出接近于线性，使得网络更容易学习到线性相关的特征。另外，tanh 函数具有对称性，在处理序列数据时能够更好地捕捉序列中的长期依赖关系。
 >
-> 在LSTM中，如果权重值较大或者较小，那么在反向传播时，梯度值会非常大或者非常小，导致梯度爆炸或者消失的情况。而**tanh函数的导数范围在[-1, 1]之间，可以抑制梯度的放大和缩小，从而避免了梯度爆炸和消失的问题(RNN遇到的问题）**。此外，tanh函数在输入为0附近的时候输出接近于线性，使得网络更容易学习到线性相关的特征。另外，tanh 函数具有对称性，在处理序列数据时能够更好地捕捉序列中的长期依赖关系。
->
-> 因此，使用tanh作为LSTM输入层的激活函数是比较常见的做法。
 
-![在这里插入图片描述](../../../../../../Python全栈开发/人工智能/人工智能笔记本&案例/机器学习笔记本&案例/深度学习笔记本&案例/通用学习笔记/Keras/layers.assets/20210305193712444.gif%23pic_center)
+![20210305193712444](core%20algorithm.assets/20210305193712444.gif)
 
 输入门的计算公式
 
 ![在这里插入图片描述](core algorithm.assets/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3OTI3NzMx,size_16,color_FFFFFF,t_70-16801340054184.png)
 
-###### c. Cell State
+###### c. Cell State 传播
 
 首先前一层的细胞状态与遗忘向量逐点相乘。如果它乘以接近 0 的值，意味着在新的细胞状态中，这些信息是需要丢弃掉的。然后再将该值与输入门的输出值逐点相加，将神经网络发现的新信息更新到细胞状态中去。至此，就得到了更新后的细胞状态。
 
-![在这里插入图片描述](../../../../../../Python全栈开发/人工智能/人工智能笔记本&案例/机器学习笔记本&案例/深度学习笔记本&案例/通用学习笔记/Keras/layers.assets/20210305193746597.gif%23pic_center)
+![20210305193746597](core%20algorithm.assets/20210305193746597.gif)
 
 Cell State的计算公式
 
@@ -768,7 +806,7 @@ Cell State的计算公式
 
 输出门用来确定下一个隐藏状态的值，**隐藏状态包含了先前输入的信息**。首先，我们将前一个隐藏状态和当前输入传递到 sigmoid 函数中，然后将新得到的细胞状态传递给 tanh 函数。最后将 tanh 的输出与 sigmoid 的输出相乘，以**确定隐藏状态应携带的信息**。再将隐藏状态作为当前细胞的输出，把新的细胞状态和新的隐藏状态传递到下一个时间步长中去。
 
-![在这里插入图片描述](../../../../../../Python全栈开发/人工智能/人工智能笔记本&案例/机器学习笔记本&案例/深度学习笔记本&案例/通用学习笔记/Keras/layers.assets/20210305193815841.gif%23pic_center)
+![20210305193815841](core%20algorithm.assets/20210305193815841.gif)
 
 输出门的计算公式
 
@@ -776,63 +814,13 @@ Cell State的计算公式
 
 
 
-在LSTM层中，每个时间步上的计算涉及到许多参数，包括输入、遗忘和输出门的权重，以及当前时间步和前一个时间步的输出和记忆之间的权重。这些参数在模型训练过程中通过反向传播进行学习，以最小化模型在训练数据上的损失函数。总之，LSTM通过门的控制，使得信息在传递过程中可以有选择地被遗忘或更新，从而更好地捕捉长序列之间的依赖关系，广泛应用于语音识别、自然语言处理等领域。
+在以上的讲解中，我讲的哲学一点，解释每个运算的目的。比如遗忘门中的运算是为了故意遗忘携带数据流中的不相关信息。同时，输入门用新信息来更新携带轨道。但归根结底，这些解释并没有多大意义，因为这些运算的实际效果
 
-LSTM的输出可以是**它的最终状态（最后一个时间步的隐藏状态）**或者是**所有时间步的隐藏状态序列**。通常，LSTM的最终状态可以被看作是**输入序列的一种编码，可以被送入其他层进行下一步处理**。如果**需要使用LSTM的中间状态，可以将`return_sequences`参数设置为True，这样LSTM层将返回所有时间步的隐藏状态序列**，而不是仅仅最终状态。
+是由**参数化权重**决定的，而权重是以端到端的方式进行学习，每次训练都要从头开始，**不可能为某个运算赋予特定的目的**。RNN 单元的类型（如前所述）决定了你的假设空间，即在训练期间搜索良好模型配置的空间，但它不能决定 RNN 单元的作用，那是由单元权重来决定的。同一个单元具有不同的权重，可以实现完全不同的作用。因此，组成 RNN 单元的运算组合，最好被解释为**对搜索的一组约束，而不是一种工程意义上的设计**。
 
-> 需要注意的是，LSTM层在**处理长序列时容易出现梯度消失或爆炸的问题**。为了解决这个问题，通常会使用一些技巧，比如截断反向传播、梯度裁剪、残差连接等
+对于研究人员来说，这种约束的选择（即如何实现 RNN 单元）似乎最好是留给最优化算法来完成（比如遗传算法或强化学习过程），而不是让人类工程师来完成。在未来，那将是我们构建网络的方式。总之，你不需要理解关于 LSTM 单元具体架构的任何内容。作为人类，理解它不应该是你要做的。你**`只需要记住 LSTM 单元的作用`**：允许过去的信息稍后重新进入，从而**解决梯度消失问题。**
 
-##### 参数详解
-
-`layers.LSTM` 是一个带有内部状态的循环神经网络层，其中包含了多个可训练的参数。具体地，LSTM层的输入是一个形状为(batch_size, timesteps, input_dim)的三维张量，其中batch_size表示输入数据的批次大小，timesteps表示序列数据的时间步数，input_dim表示每个时间步的输入特征数。LSTM层的输出是一个形状为**(batch_size, timesteps, units)的三维张量，其中units表示LSTM层的输出特征数**。以下是各个参数的详细说明：
-
-- `units`：LSTM 层中的单元数，即 LSTM 层输出的维度。
-- `activation`：激活函数，用于计算 LSTM 层的输出和激活门。
-- `recurrent_activation`：循环激活函数，用于计算 LSTM 层的循环状态。
-- `use_bias`：是否使用偏置向量。
-- `kernel_initializer`：用于初始化 LSTM 层的权重矩阵的初始化器。
-- `recurrent_initializer`：用于初始化 LSTM 层的循环权重矩阵的初始化器。
-- `bias_initializer`：用于初始化 LSTM 层的偏置向量的初始化器。
-- `unit_forget_bias`：控制 LSTM 单元的偏置初始化，如果为 True，则将遗忘门的偏置设置为 1，否则设置为 0。
-- `kernel_regularizer`：LSTM 层权重的正则化方法。
-- `recurrent_regularizer`：LSTM 层循环权重的正则化方法。
-- `bias_regularizer`：LSTM 层偏置的正则化方法。
-- `activity_regularizer`：LSTM 层输出的正则化方法。
-- `dropout`：LSTM 层输出上的 Dropout 比率。
-- `recurrent_dropout`：LSTM 层循环状态上的 Dropout 比率。
-- `return_sequences`: 可以控制LSTM的输出形式。如果设置为True，则输出每个时间步的LSTM的输出，如果设置为False，则只输出最后一个时间步的LSTM的输出。因此，return_sequences的默认值为False，如果需要输出每个时间步的LSTM的输出，则需要将其设置为True。
-
-这些参数的不同设置将直接影响到 LSTM 层的输出和学习能力。需要根据具体的应用场景和数据特点进行选择和调整。
-
-```python
-tf.keras.layers.LSTM(
-units,
-activation=“tanh”,
-recurrent_activation=“sigmoid”, #用于重复步骤的激活功能
-use_bias=True, #是否图层使用偏置向量
-kernel_initializer=“glorot_uniform”, #kernel权重矩阵的 初始化程序，用于输入的线性转换
-recurrent_initializer=“orthogonal”, #权重矩阵的 初始化程序，用于递归状态的线性转换
-bias_initializer=“zeros”, #偏差向量的初始化程序
-unit_forget_bias=True, #则在初始化时将1加到遗忘门的偏置上
-kernel_regularizer=None, #正则化函数应用于kernel权重矩阵
-recurrent_regularizer=None, #正则化函数应用于 权重矩阵
-bias_regularizer=None, #正则化函数应用于偏差向量
-activity_regularizer=None, #正则化函数应用于图层的输出（其“激活”）
-kernel_constraint=None,#约束函数应用于kernel权重矩阵
-recurrent_constraint=None,#约束函数应用于 权重矩阵
-bias_constraint=None,#约束函数应用于偏差向量
-dropout=0.0,#要进行线性转换的输入单位的分数
-recurrent_dropout=0.0,#为递归状态的线性转换而下降的单位小数
-return_sequences=False,#是否返回最后一个输出。在输出序列或完整序列中
-return_state=False,#除输出外，是否返回最后一个状态
-go_backwards=False,#如果为True，则向后处理输入序列并返回反向的序列
-stateful=False,#如果为True，则批次中索引i的每个样本的最后状态将用作下一个批次中索引i的样本的初始状态。
-time_major=False,
-unroll=False,#如果为True，则将展开网络，否则将使用符号循环。展开可以加快RNN的速度，尽管它通常会占用更多的内存。展开仅适用于短序列。
-)
-```
-
-#####  参数计算
+#####  模型参数计算
 
 对于一个LSTM（长短期记忆）模型，参数的计算涉及输入维度、隐藏神经元数量和输出维度。在给定输入维度为（64，32）和LSTM神经元数量为32的情况下，我们可以计算出以下参数：
 
@@ -864,50 +852,9 @@ unroll=False,#如果为True，则将展开网络，否则将使用符号循环�
 
 因此，总共的参数数量可以通过计算上述所有矩阵和向量中的元素总数来确定。
 
-##### 实际场景
 
-当使用LSTM（长短期记忆）神经网络进行时间序列预测时，可以根据输入和输出的方式将其分为四种类型：单变量单步预测、单变量多步预测、多变量单步预测和多变量多步预测。
 
-1. 单变量单步预测：
-   - 输入：只包含单个时间序列特征的历史数据。
-   - 输出：预测下一个时间步的单个时间序列值。
-   - 例如，给定过去几天的某股票的收盘价，使用LSTM进行单变量单步预测将预测未来一天的收盘价。
-
-2. 单变量多步预测：
-   - 输入：只包含单个时间序列特征的历史数据。
-   - 输出：预测接下来的多个时间步的单个时间序列值。
-   - 例如，给定过去几天的某股票的收盘价，使用LSTM进行单变量多步预测将预测未来三天的收盘价。
-
-3. 多变量单步预测：
-   - 输入：包含多个时间序列特征的历史数据。
-   - 输出：预测下一个时间步的一个或多个时间序列值。
-   - 例如，给定过去几天的某股票的收盘价、交易量和市值等特征，使用LSTM进行多变量单步预测可以预测未来一天的收盘价。
-
-4. 多变量多步预测：
-   - 输入：包含多个时间序列特征的历史数据。
-   - 输出：预测接下来的多个时间步的一个或多个时间序列值。
-   - 例如，给定过去几天的某股票的收盘价、交易量和市值等特征，使用LSTM进行多变量多步预测将预测未来三天的收盘价。
-
-这些不同类型的时间序列预测任务在输入和输出的维度上略有差异，但都可以通过适当配置LSTM模型来实现。具体的模型架构和训练方法可能会因任务类型和数据特点而有所不同。
-
-##### Bidirectional(LSTM）
-
-双向LSTM（Bidirectional LSTM）的原理和实现时，我们可以分为以下几个部分：网络结构、前向传播和反向传播的计算过程、以及案例实现代码。
-
-**网络结构：** 双向LSTM由两个LSTM层组成，一个以正向方式处理输入序列，另一个以反向方式处理输入序列。每个LSTM层都有自己的隐藏状态，用于捕捉正向和反向上下文之间的依赖关系。两个LSTM层的输出通常会被合并起来，形成一个综合的表示，用于后续任务。
-
-**前向传播和反向传播的计算过程：**
-
-1. **前向传播（Forward Propagation）：**
-   - 对于正向LSTM层，输入序列按时间步骤从开始到结束进行处理。
-   - 在每个时间步骤，输入数据和前一个时间步骤的隐藏状态经过一系列操作，包括线性变换、激活函数（如Sigmoid和Tanh）和遗忘门、输入门、输出门等门控机制的计算。这些操作的目的是更新当前时间步骤的细胞状态和隐藏状态。
-   - **正向LSTM层的最终输出是预测结果，并且也作为反向LSTM层的输入**。
-2. **反向传播（Backward Propagation）：**
-   - 对于反向LSTM层，输入序列按时间步骤从结束到开始进行处理。
-   - 在每个时间步骤，输入数据和后一个时间步骤的隐藏状态经过类似的操作，但这次是反向方向的计算。
-   - **反向LSTM层的最终输出是预测结果**。
-3. **输出合并：**
-   - 在双向LSTM中，通常将**正向LSTM层和反向LSTM层的输出在每个时间步骤上进行连接**，形成一个综合的表示。这可以通过简单地将对应时间步骤的隐藏状态和预测结果进行拼接来实现。
+在文本中由于其句子正向逆向角度来阅读信息其实都差不多，但是能够补充一点信息，而在正向时序强的话效果就相对没有那么好了
 
 **案例实现代码：** 下面是一个使用Keras库实现双向LSTM进行情感分析的示例代码：
 
@@ -962,11 +909,22 @@ loss, accuracy = model.evaluate(X_test, y_test)
 
 然后，通过编译模型，并使用训练数据进行模型训练。在训练完成后，可以使用测试数据评估模型的性能，计算损失和准确率（accuracy）。请注意，上述代码仅为示例，实际使用时需要根据具体任务进行适当修改和调整。
 
-#### GRU 门控循环单元
+如果你对LSTM以及其与反向传播算法之间的详细联系感兴趣，我建议你参考以下资源：
+
+1. BENGIO Y, SIMARD P, FRASCONI P. Learning long-term dependencies with gradient descent is difficult [C]//IEEE Transactions on Neural Networks, 1994, 5(2): 157-166.
+2. HOCHREITER S, SCHMIDHUBER J. Long short-term memory [J]. Neural Computation, 1997, 9(8): 1735-1780.
+3. "Understanding LSTM Networks" by Christopher Olah: https://colah.github.io/posts/2015-08-Understanding-LSTMs/  强烈推荐！！！ 
+4. TensorFlow官方教程：Sequence models and long-short term memory network (https://www.tensorflow.org/tutorials/text/text_classification_rnn)
+5. PyTorch官方文档：nn.LSTM (https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html)
+6. 详细讲解RNN,LSTM,GRU  https://towardsdatascience.com/a-brief-introduction-to-recurrent-neural-networks-638f64a61ff4
+
+#### GRU (Gated Recurrent Unit)
 
 GRU（Gated Recurrent Unit，门控循环单元）是一种循环神经网络（RNN）的变体，用于处理序列数据。它是为了解决传统RNN中的梯度消失问题和长期依赖问题而提出的。
 
 GRU单元通过引入门控机制来控制信息的流动，从而能够更好地捕捉长期依赖关系。相比于传统的RNN和LSTM，GRU具有更简单的结构和更少的参数，但仍能有效地建模和处理序列数据。
+
+![img](core%20algorithm.assets/1-ldMy6GqBy8D25uNKQl2gA.png)
 
 GRU单元的核心结构包括以下几个关键组件：
 
@@ -1007,96 +965,175 @@ GRU单元的参数包括权重矩阵（W和U）和偏置向量。这些参数通
 
 相比于传统的RNN和LSTM，GRU单元的结构更简洁，具有更少的门控单元和参数。这使得GRU在处理序列数据时具有更高的计算效率，并能够更好地捕捉长期依赖关系。
 
-希望这个解释对您有帮助。如果您有任何进一步的问题，请随时提问。
+#### 循环神经网络高级应用最佳实践
 
-### Transformer
+##### 合理分析问题
+
+在面对一些情感分析问题时表现不好，主要原因在于，适用于**`评论分析全局的长期性结构`**（这正是 LSTM 所擅长的），对情感分析问题帮助不大。对于这样的基本问题，观察每条评论中出现了哪些词及其出现频率就可以很好地解决。**全连接方法的做法效果能够更好**。但还有更加困难的自然语言处理问题，特别是问答和机器翻译，这时 LSTM 的优势就明显了。
+
+而需要注意的是，LSTM层在**处理长序列时容易出现梯度消失或爆炸的问题**。为了解决这个问题，通常会使用一些技巧，比如截断反向传播、梯度裁剪、残差连接等
+
+##### 循环神经网络输出
+
+以上讲解中最终输出是一个形状为 (timesteps, output_features) 的二维张量，其中每个时间步是循环在 t 时刻的输出。输出张量中的每个时间步 t 包含输入序列中时间步0~t 的信息，即关于全部过去的信息。因此，在多数情况下，你并不需要这个所有输出组成的序列，你只需要最后一个输出（循环结束时的 output_t），因为它已经**包含了整个序列的信息**。（如果需要使用LSTM的中间状态，可以在Keras将`return_sequences`参数设置为True）
+
+##### 循环 dropout（recurrent dropout）
+
+这是一种特殊的内置方法，在循环层中使用 dropout
+
+来降低过拟合。
+
+##### 堆叠循环层（stacking recurrent layers） & 双向循环层（bidirectional recurrent layer）
+
+这会提高网络的表示能力（代价是更高的计算负荷）。
+
+将相同的信息以不同的方式呈现给循环网络，可以提高精度并缓解遗忘问题。
+
+##### 时间序列数据生成器
+
+要注意的是提前进行数据预处理工作
+
+编写一个 Python 生成器，以当前的浮点数数组作为输入，并从最近的数据中生成数据批量，同时生成未来的目标温度。因为数据集中的样本是高度冗余的（对于第 *N* 个样本和第 *N*+1 个样本，大部分时间步都是相同的），所以显式地保存每个样本是一种浪费。相反，我们将使用原始数据即时生成样本。
+
+LSTM构建时间序列模型同样需要用到**滑动窗口**的概念构建数据集与标签。
+
+<img src="core%20algorithm.assets/image-20231130110510200.png" alt="image-20231130110510200" style="zoom:50%;" />
+
+以下是一个实现的基本代码，这个`lookback`其实我们也可以通过前面ARIMA模型求解的自相关与偏向关来参考，这里的适合小数据量
+
+```python
+def slip_windows(x, lookback=50):
+    """
+    :param x: Array-like data (one dimension)
+    :param steps: slip step
+    """
+    assert len(x) > lookback, "参数应大于等于steps"
+
+    data = []
+    target = []
+    for i in range(len(x) - lookback):
+        data.append(x[i:i + lookback])
+        target.append(x[i+lookback])
+    return np.array(data), np.array(target)
+```
+
+实际上在面对大量数据时，一般建议使用生成器来加载数据，以下是一个适用于大部分常见的时间序列数据生成器代码，如果这里的数据较少反而会带来代码处理麻烦
+
+```python
+def generator(data, lookback, delay, min_index=0, max_index=None, shuffle=False, batch_size=128, step=6):
+    """
+    生成时间序列样本及其目标的生成器函数。
+
+    参数：
+    - data：包含时间序列数据的数组
+    - lookback：输入数据的过去时间步数
+    - delay：目标数据在未来的时间步数
+    - min_index：数据的最小索引
+    - max_index：数据的最大索引
+    - shuffle：是否打乱样本顺序，默认为 False
+    - batch_size：每个批次的样本数，默认为 128
+    - step：数据采样的周期，默认为 6（每小时采样一个数据点）
+
+    返回：
+    - 生成器对象，每次迭代返回一个批次的样本和目标
+    """
+    if max_index is None:
+        max_index = len(data) - delay - 1
+    i = min_index + lookback  # 对于数据索引下标
+    while 1:
+        if shuffle:
+            rows = np.random.randint(
+                min_index + lookback, max_index, size=batch_size)  # samples indice
+        else:
+            if i + batch_size >= max_index:
+                i = min_index + lookback  # again new batchsize
+            rows = np.arange(i, min(i + batch_size, max_index))  # samples indice
+            i += len(rows)
+        samples = np.zeros((len(rows),
+                            lookback // step,
+                            data.shape[-1]))
+        targets = np.zeros((len(rows), ))
+        for j, row in enumerate(rows):
+            indices = range(rows[j] - lookback, rows[j], step)
+            samples[j] = data[indices]
+            targets[j] = data[rows[j] + delay]
+        yield samples, targets
+           
+        
+        
+# 测试代码
+mean = np.mean(data_d[:130])
+std = np.std(data_d[:130])
+data_d -= mean
+data_d /= std
+train_gen = generator(data_d.values, max_index=100, lookback=lookback, delay=delay, step=step, batch_size=batch_size)
+# 获取下一个批次的样本和目标
+samples, targets = next(train_gen)
+
+# 打印样本和目标的形状
+print("样本形状:", samples.shape)
+print("目标形状:", targets.shape)
+
+# 打印样本和目标的内容
+print("样本:")
+print(samples)
+print("目标:")
+print(targets)
+```
+
+
+
+## Transformer家族
+
+### Transformer base
+
+论文《Attention is All you Need》
 
 注意力（Attention）机制由Bengio团队与2014年提出并在近年广泛的应用在深度学习中的各个领域，例如在计算机视觉方向用于捕捉图像上的感受野，或者NLP中用于定位关键token或者特征。谷歌团队近期提出的用于生成词向量的BERT算法在NLP的11项任务中取得了效果的大幅提升，堪称2018年深度学习领域最振奋人心的消息。而BERT算法的最重要的部分便是本文中提出的Transformer的概念。
 
-![image-20230918170140413](core algorithm.assets/image-20230918170140413.png)
+其中Transformer 模型架构图如下：
 
+> Deocoder中的 K,V 为 Encoder 的输出（内容信息），Q 为 Decoder 中根据参考Token的查询信息
 
+![img](core algorithm.assets/U3EwOx.png#shadow)
 
 #### 背景和动机
 
-作者采用Attention机制的原因是考虑到RNN（或者LSTM，GRU等）的计算限制为是顺序的，也就是说RNN相关算法只能从左向右依次计算或者从右向左依次计算，这种机制带来了两个问题：
+在NLP模型领域中，seq2seq是一种常见的模型结构（序列到序列），其于 2013年、2014 年被多位学者共同提出，在机器翻译任务中取得了非常显著的效果，随后提出的 attention 模型更是将 Seq2Seq 推上了神坛，Seq2Seq+attention 的组合横扫了非常多的任务，只需要给定足够数量的 input-output pairs，通过设计两端的 sequence 模型和 attention 模型，就可以训练出一个不错的模型。除了应用在机器翻译任务中，其他很多的文本生成任务都可以基于 Seq2Seq 模型来做。
 
-1. 时间片 t 的计算依赖 t−1 时刻的计算结果，这样限制了**模型的并行能力**；
+常见典型的任务有：机器翻译任务，文本摘要任务、代码补全、诗词生成等等，其思想不仅可以用在文本领域还可以用在语音图像领域中。
 
-2. 传统的序列模型（如循环神经网络）存在着长期依赖问题，难以捕捉长距离的依赖关系。顺序计算的过程中**信息会丢失**，尽管LSTM等门机制的结构一定程度上缓解了长期依赖的问题，但是对于特别长期的依赖现象,LSTM依旧无能为力。故提出了用CNN来代替RNN的解决方法（平行化)。
+`那么在transfromers前传统的seq2seq任务实现方案是如何是实现的，有哪些缺点呢？`
 
-   ![image-20230922114917294](core algorithm.assets/image-20230922114917294.png)
+传统的序列模型通常使用的是循环神经网络，如RNN（或者LSTM，GRU等），但是循环神经网络的计算限制为是顺序的，也就是说循环神经网络算法只能从左向右依次计算或者从右向左依次计算，这种机制带来了三个问题：
+
+1. 时间片 t 的计算依赖 t−1 时刻的计算结果，需要计算完前一个时间刻才能下一步计算这样限制了**模型的并行能力**；比如RNN中的t0时刻跟t10时刻的信息如果要交互，必须经过t1~t9，才能传递过去，信息且会随着传递距离增加而衰减，对信息的捕获能力较差，所求特征的表征能力也就更差了
+
+2. 传统的序列模型存在着长期依赖问题，难以捕捉**长距离的依赖关系**。顺序计算的过程中**信息会丢失**，尽管LSTM等门机制的结构一定程度上缓解了长期依赖的问题，但是对于特别长期的依赖现象, LSTM依旧无能为力。而如果用CNN来代替RNN的解决方法（平行化)，但也只能**感受到部分的感受野**，**需要多层叠加**才能感受整个图像，其中可以参考下图辅助理解。
+
+   <img src="core algorithm.assets/image-20230922114917294.png" alt="image-20230922114917294" style="zoom: 33%;" />
    
-   > 长期依赖关系见笔记本  [classical concept.md](classical concept.md) 
    
- 3. 但是卷积神经网络只能感受到部分的感受野，**需要多层叠加**才能感受整个图像，而transformer注意力机制可以一层感受到全部序列，并提出了 Multi-Head Attention 实现和卷积网络多个输出识别不同模式的效果 ，故提出了自注意力机制
 
-我们下面的内容依次按照模型的顺序讲解，首先讲解Positional Encoding，在讲解自注意力机制和多头注意力机制，再到全连接和跳跃连接
+为了解决这个问题，作者提出一种新的注意力机制 *self attention* 结构，我们下面就看提出的这种结构如何解决上面的两个问题
 
-#### Positional Encoding
+ [**Self**-**attention** with relative position representations](https://scholar.google.com/scholar_url?url=https://arxiv.org/abs/1803.02155&hl=zh-CN&sa=T&oi=gsb&ct=res&cd=0&d=5563767891081728261&ei=K57BZfHYArCH6rQPgome8AY&scisig=AFWwaeZGunl1eC-MkbFMxp5PVpEE)
 
-由于 Transformer 模型没有显式的顺序信息（**没有**循环神经网络的迭代操作），为了保留输入序列的位置信息&顺序关系，需要引入位置编码。位置编码是一种向输入**嵌入中添加的特殊向量**（不被训练的），用于表示单词或标记在序列中的位置。
+#### Self Attention
 
-相比起直接 concatenate ，直接相加似乎看起来会被糅合在输入中似乎位置信息会被擦除，我们可以假设concatenate 一个独热向量p_i ， 代表其位置信息，
+Self Attention是Transformer模型的灵魂核心组件之一。该机制目的是让模型根据输入序列中**不同位置的相关性权重**来计算每个位置的表示，通过计算**查询和键之间的相似性**得分，并将这些得分应用于值来获取**加权和，从而生成每个位置的输出表示**。（其目的就是解决以上所说的两个问题）
 
-![image-20230924164520197](core algorithm.assets/image-20230924164520197.png)
+> 这样我们在每个位置的序列输出都和全部位置的序列有关，这解决了第一个问题：全局的视野（对信息的捕获能力更强），同时该计算是各个向量矩阵点积运算，可以满足并行化运行，这就解决了第二个问题：时间片 t 的计算不依赖 t−1 时刻的计算结果，比如RNN中的t0时刻跟t10时刻的信息距离只是一个常量。
 
-如图所示，最后也可以看为二者相加，但是此时的e^i 的权重W_P是可以被learn的 W^P^，根据研究表明这个W^P^ learn 有人做过了在convolution中`seq to seq`中类似的学习参数做法效果并不是很好，还有说其实会添加很多的不必要的参数学习等（issue地址：https://github.com/tensorflow/tensor2tensor/issues/1591，https://datascience.stackexchange.com/questions/55901/in-a-transformer-model-why-does-one-sum-positional-encoding-to-the-embedding-ra  不过我觉得实验才是真理，但似乎目前我还没有看到相关实验，如果有请在评论区留言！！），所以有一个人手设置的非常奇怪的式子产生确定W^P^ （其中W^P^ 绘图如图所示）
+Self Attention接受的输入是三个相同的向量，分别命名为 Query 向量，一个 Key 向量和一个 Value 向量。
 
-![image-20230924165123813](core algorithm.assets/image-20230924165123813.png)
+> 那我们面对输入序列X，如何满足Self Attention接受的输入呢？`
 
-Transformer 模型一般以**字**为单位训练，论文中使用了 sin(罪) 和 cos 函数的线性变换来提供给模型位置信息.
+Q、K和V是通过**对输入序列进行线性变换得到**的，通过对输入序列的每个位置应用**不同的权重矩阵**，将输入序列映射到具有不同维度的查询（Q）、键（K）和值（V）空间。这样，我们就可以使用这些查询、键和值来输入到**Self Attention**结构计算注意力权重并生成加权表示。
 
-理想情况下，信息编码（piece of information）的设计应该满足以下条件：
+<img src="core algorithm.assets/image-20230922120011708.png" alt="image-20230922120011708" style="zoom:33%;" />
 
--  它应该为每个字（时间步）输出唯一的编码
--  不同长度的句子之间，任何两个字（时间步）之间的差值应该保持一致
--  我们的模型应该无需任何努力就能推广到更长的句子。它的值应该是有界的。
--  它必须是确定性的
-
-在Transformer中，位置编码器的函数可以由以下公式表示：
-
-$$
-PE_{(pos, 2i)} = \sin\left(\frac{{pos}}{{10000^{2i/d_{\text{model}}}}}\right)
-$$
-
-$$
-PE_{(pos, 2i+1)} = \cos\left(\frac{{pos}}{{10000^{2i/d_{\text{model}}}}}\right)
-$$
-
-其中，$pos$表示输入序列中的位置，$i$表示位置编码中的维度索引，$d_{\text{model}}$表示Transformer模型的隐藏单元大小。
-
-您可能想知道正弦和余弦的这种组合如何表示位置 / 顺序？其实很简单，假设你想用二进制格式来表示一个数字，会怎样可以发现不同位之间的变化，在每个数字上交替，第二低位在每两个数字上轮换，依此类推。但在浮点数世界中使用二进制值会浪费空间。因此，我们可以使用它们的浮点连续对应物 - 正弦函数。事实上，它们相当于交替位。
-
-这个公式中的分数部分将位置$pos$进行了缩放，并使用不同的频率（$10000^{2i/d_{\text{model}}}$）来控制不同维度的变化速度。这样，**不同位置和不同维度的位置编码会得到不同的数值，形成一个独特的向量表示**，
-
-![img](core algorithm.assets/gFfQoR.png#shadow)
-
-正弦位置编码的另一个特点是它允许模型**毫不费力地关注相对位置**。以下是原论文的引用：
-
->  We chose this function because we hypothesized it would allow the model to easily learn to attend by relative positions, since for any fixed  offset  k, PEpos+k can  be represented as a linear function  of PEpos.
-
-https://kazemnejad.com/blog/transformer_architecture_positional_encoding/  这篇文章就很好的讲解了，这是因为其实这个添加的位置offset可以通过PEpos本身dot product 一个矩阵M得到对应offset后的结果PEpos+k（相当于线性变换，独立于时间变量t)
-
-![image-20230930162811725](core algorithm.assets/image-20230930162811725.png)
-
->  总结来看：位置编码器采用正弦和余弦函数的函数形式是为了满足一些重要特性，以便在Transformer模型中有效地表示位置信息。
->
->  1. 周期性: 使用正弦和余弦函数能够使位置编码具有周期性。使得位置编码的值在每个维度上循环变化。这对于表示序列中的不同位置非常重要，因为不同位置之间可能存在重要的依赖关系。
->  2. 连续性: 正弦和余弦函数在输入空间中是连续的。这意味着相邻位置之间的位置编码也是连续的，有助于保持输入序列中的顺序信息的连贯性。
->  3. 维度关联: 位置编码中的维度与Transformer模型的隐藏单元大小相关联。这意味着不同维度的位置编码会以不同的频率变化，从而能够捕捉不同尺度的位置信息。较低维度的位置编码可以更好地表示较短距离的依赖关系，而较高维度的位置编码可以更好地表示较长距离的依赖关系。
-
-#### 自注意力机制（Self-Attention）
-
- Transformer 模型的核心组件之一。自注意力允许模型根据输入序列中**不同位置的相关性权重**来计算每个位置的表示。通过计**算查询、键和值之间的相似性得分**，并将这些得分应用于值来获取**加权和，从而生成每个位置的输出表示**。（其目的就是取代RNN要做的事情，sequence to sequence（seq2seq），同时计算)
-
-Q、K和V是通过对输入序列进行线性变换得到的，具体来说，通过对输入序列的每个位置应用不同的权重矩阵，将输入序列映射到具有不同维度的查询（Q）、键（K）和值（V）空间。这样，我们就可以使用这些查询、键和值来计算注意力权重并生成加权表示。
-
-![image-20231001161954003](core algorithm.assets/image-20231001161954003.png)
-
->  值（V）代表的是确切的值（线性变换得到），一般是不变的用于求最后的输出，其次要实现求各个向量的相似性，如果只有一个k，而没有q，那k 与其他输入的 k作相似性，自己单元没有可以做相似性的地方，而再加一个q就可以实现了, 从而最后得到权重。
-
-具体来说，给定一个输入序列X，我们可以通过线性变换得到Q、K和V：
+给定一个输入序列X，我们可以通过线性变换得到Q、K和V：
 
 Q = X * W_Q
 K = X * W_K
@@ -1106,68 +1143,229 @@ V = X * W_V
 
 使用Q、K和V的好处是，它们允许模型根据**输入的不同部分**对相关信息进行加权。Q用于查询**输入序列的每个位置**，K用于提供关于**其他位置的信息**，V则提供用于计算加权表示的值。
 
-![image-20230922115656582](core algorithm.assets/image-20230922115656582.png)
+值（V）代表的是确切的值（线性变换得到），一般是不变的用于求最后的输出，其次要实现求各个向量的相似性，如果只有一个k，而没有q，那k 与其他输入的 k作相似性，自己单元没有可以做相似性的地方，而再加一个q就可以实现了, 从而最后得到权重。
 
-![image-20230922120011708](core algorithm.assets/image-20230922120011708.png)
+> 在第一次看到Q,K,V的时候我们会想，为什么需要这三个值呢？`
 
-q,k做一个 inner product，并除与维度长度，这是因为维度值越大，输出结果a越大，所以通过除于维度的根号来平衡，通过计算Q和K之间的相似度得到注意力权重。一种常用的计算相似度的方法是使用点积操作：
+Self Attention 为了解决以上所说的两个问题，所采取的思路是通过全局位置的序列向量之间的相似性关系进行建模，来达到全局视野的目的，那么我们要计算每个位置向量之间的相似性权重，并指导当前位置的输出。
 
-Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) * V
+一种常用的计算相似度的方法是点积运算，而 Q,K 向量点击运算的结果每个位置向量之间（包括自己与自己）的相似性权重，而V则是与注意力权重用于当前位置的输出。
 
-其中d_k是Q和K的维度。通过将Q和K进行点积操作并除以sqrt(d_k)来缩放注意力权重，这有助于减小梯度在计算注意力时的变化范围（维度越大值越大），使得训练更加稳定。
+QK是专门用于求相似性的，如果只有一个向量比如k，而没有q，k 可以与其他位置向量的 k作相似性，但在自己单元却没有可以做相似性的地方，此时就无法进行各个相似性关系的比较从而得到关于全局位置的输出了，要解决该问题而再加一个向量q就可以实现了。
 
-这只是一个案例，不一定要使用scaled dot-product attention, 用其他的attention方法也有很多种，只要能输入两个向量输出一个分数即可
+Self Attention 具体的流程图如下：
 
-![image-20230922154628040](core algorithm.assets/image-20230922154628040.png)
+<img src="core algorithm.assets/image-20231001161954003.png" alt="image-20231001161954003" style="zoom: 50%;" />
 
-将注意力权重与V进行加权求和，得到最终的表示：
+我们先看图片所示$a^1$的例子，首先将$a^1$ 的 $q^1$ 与所有时间刻的 $k^1$ 进行inner product并除与 $\sqrt{d_k}$（ 其中$d_k$是Q和K的维度。）计算二者的相似性，得到 对应的相似性序列值 $a_{1,i}$  
 
-Output = Attention(Q, K, V)
+> `为什么需要除与维度长度的根号呢？`
+>
+> 这是因为当数据维度值越大时，inner product的结果越大，通过将Q和K进行点积操作并除以$\sqrt(d_k)$来缩放注意力权重，这有助于减小梯度在计算注意力时的变化范围（维度越大值越大），使得训练更加稳定。
 
-![image-20230922155120587](core algorithm.assets/image-20230922155120587.png)
+<img src="core algorithm.assets/image-20230922154628040.png" alt="image-20230922154628040" style="zoom:50%;" />
 
-通过每个attention权重乘上v累加最终根据 $x^1$ 数据的 $q^1$ 得到基于全部序列长度的attention权重下的求和值，得到对应的 $b^1$
+对相似性序列值 $a_{1,i}$  进行 Softmax 操作得到每个时刻的相似性权重 
 
-![image-20230922160608376](core algorithm.assets/image-20230922160608376.png)
+<img src="core algorithm.assets/image-20230922155120587.png" alt="image-20230922155120587" style="zoom:50%;" />
 
-通过这种方法，我产生了一个 $b^1$ ,看到了全部的输入序列，但是如果说不想考虑到全部的输入，比如时序预测中只想看到以前的，只需要将对应权重为0即可，即给q , v 相似度输出默认给一个非常大的负数，在经过`softmax`就会变成0。
+而后通过对每个时间刻的相似性权重和Value向量点积累加，最终得到  $a^1$所对应的 $b^1$
 
-以此类推切换 $q$，输出全部输出 $b$ 序列。该方法所实现的平行化的意思是实现矩阵运算，上面介绍的方法需要一个循环遍历所有的字 xt，我们可以把上面的向量计算变成矩阵的形式，从而一次计算出所有时刻的输出
+<img src="core algorithm.assets/image-20230922160608376.png" alt="image-20230922160608376" style="zoom: 50%;" />
 
-![image-20230924110646423](core algorithm.assets/image-20230924110646423.png)
+以此类推计算不同位置对应的$b_i$，输出 序列 $b$，我们可以得到矩阵相乘的式子，从而一次计算出所有时刻的输出，这样便实现了平行化计算（矩阵运算），计算过程如下图所示
 
-第一步就不是计算某个时刻的 qt,kt,vt 了，而是一次计算所有时刻的 Q,K 和 V。计算过程如下图所示，这里的输入是一个矩阵 X，矩阵第 t 行为第 t 个词的向量表示 xt
+<img src="core algorithm.assets/image-20230924110646423.png" alt="image-20230924110646423" style="zoom:50%;" />
 
-#### 多头注意力机制（Multi-head Self-attention)
+这样我们就最终得到Self Attention 公式如下：
+$$
+Attention(Q, K, V) = softmax(\frac{QK^T }{ \sqrt{(d_k)}}) * V
+$$
+总的来说，Self Attention能够很好的解决前面的两个问题，但随之而来的也有两个问题，
 
-为了实现多个输出扑捉多种不同模式下的状态，Transformer 模型同时使用多个自注意力机制，每个注意力机制被称为一个头（head）。通过并行计算多个头，模型可以学习不同粒度和关注不同方面的特征表示。
+1. 如何捕捉多种不同模式下的状态？
 
-![image-20231001161940890](core algorithm.assets/image-20231001161940890.png)
+2. 在使用self-attention训练过程中，是通过各个位置的相似性权重加权求和得到对应序列，并没有显式的顺序信息（例如没有循环神经网络的迭代操作），我们保留输入序列的位置信息&顺序关系。
+
+   这显然是不对的，我们需要对 Decoder 的输入进行一些处理，**即在训练中只注意当前训练时间刻前的历史数据**
+
+下文所说的多头注意力机制和位置编码便是用于解决这两个问题
+
+##### 多头注意力机制（Multi-head Self-attention)
+
+为了实现捕捉多种不同模式下的状态，叠加self-attention便可以实现，每个self-attention模块被称为一个头（head）。通过并行计算多个头，模型可以学习不同粒度和关注不同方面的特征表示。
+
+<img src="core algorithm.assets/image-20231001161940890.png" alt="image-20231001161940890" style="zoom:50%;" />
 
 这里以两个头为例
 
-前面定义的一组 Q,K,V 可以让一个词 attend to 相关的词，我们可以定义多组 Q,K,V，让它们分别关注不同的上下文。计算 Q,K,V 的过程还是一样，只不过线性变换的矩阵从一组 (WQ,WK,WV) 变成了多组 (W0Q,W0K,W0V) ，(W1Q,W1K,W1V)，… 如下图所示
+**前面定义的一组 Q,K,V 可以让一个词 attend to 相关的词**，我们可以定义多组 Q,K,V，让它们分别关注不同的上下文。计算 Q,K,V 的过程还是一样，只不过线性变换的矩阵从一组 (WQ,WK,WV) 变成了多组 (W0Q,W0K,W0V) ，(W1Q,W1K,W1V)，… 如下图所示
 
-![img](core algorithm.assets/c7wEjO.png#shadow)
+<img src="core algorithm.assets/c7wEjO.png#shadow" alt="img" style="zoom: 33%;" />
 
 对于输入矩阵 X，每一组 Q、K 和 V 都可以得到一个输出矩阵 Z。如下图所示
 
-![img](core algorithm.assets/c7weDe.png#shadow)
+<img src="core algorithm.assets/c7weDe.png#shadow" alt="img" style="zoom: 50%;" />
 
-最后输出再乘以一个**矩阵降维**得到同样大小的输出。
+最后加多个头的输出拼接再乘以一个**矩阵降维**得到同样对应维度的序列$b^i$。
 
-![image-20230924113010453](core algorithm.assets/image-20230924113010453.png)
+<img src="core algorithm.assets/image-20230924113010453.png" alt="image-20230924113010453" style="zoom:50%;" />
+
+参考总结：
+
+- 目前的 Transformer 结构，encoder 端的 **head 是存在冗余的**，Multi-Head 其实不是必须的，或者丢掉一些 head 反而能提升性能
+- 结构信息对文本建模很重要，无论是什么方法即使是 Transformer；
+- 目前对 Self Attention 的改造还比较浅层，不够大刀阔斧。
+
+#### 位置编码（Positional Encoding）
+
+众所周知，文本是时序型数据，词与词之间的**顺序关系**往往影响整个句子的含义。举个栗子：
+
+*计算机魔术师/是/一个/AI/盐就人员。一个/盐就人员/是/计算机/魔术师？计算机/魔术师/是/一个/盐就人员？？*
+
+为了避免不必要的误会，所以我们在对文本数据（或者其他时序型数据）进行建模的时候需要保留输入序列的位置信息&顺序关系，此时一般需要引入位置编码。
+
+`要建模文本中的顺序关系必须要用positional encoding吗？`
+
+答案是No！
+
+只有当我们使用**对位置不敏感(position-insensitive)的模型**对文本数据建模的时候，才需要额外使用positional encoding。
+
+`那么什么是对位置敏感的模型？什么又是对位置不敏感的模型？`
+
+如果模型的输出会随着输入文本数据顺序的变化而变化，那么这个模型就是关于位置敏感的，反之则是位置不敏感的。
+
+用更清晰的数学语言来解释。设模型为函数y=f(x),其中输入为一个词序列x={ $ x_ {1} $ , $ x_ {2} $ , $ \cdots $ , $ x_ {n} $ }
+输出结果为向量y。对x的任意置换x'={ $ x_ {k} $ , $ x_ {k_ {2}} $ , $ \cdots $ , $ x_ {kn} $ },都有f(x)=f(x) 则模型是关于位置不敏感的。
+
+在我们常用的文本模型中，RNN和textCNN都是关于位置敏感的，使用它们对文本数据建模时，模型结构天然考虑了文本中词与词之间的顺序关系。而以attention为核心的transformer则是位置不敏感的，使用这一类位置不敏感的模型的时候需要额外加入positional encoding引入文本中词与词的顺序关系。
+
+对于transformer模型的positional encoding有两种主流方式：
+
+##### 绝对位置编码
+
+现在普遍使用的一种方法**Learned Positional Embedding编码绝对位置**，相对简单也很容易理解。对不同的位置随机初始化一个不同的postion embedding，加到word embedding上输入模型，作为参数进行训练。
+
+![图片](https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/640)
+
+<img src="core algorithm.assets/image-20230924164520197.png" alt="image-20230924164520197" style="zoom:50%;" />
+
+如图, 其中权重$W$ 可以分为 $W^I$ $W^P$ 对应序列 $x_i$ 和位置编码 $p^i$，矩阵计算后得到$a^i$ , $e^i$ 二者相加
+
+##### 相对位置编码
+
+使用绝对位置编码，不同位置对应的positional embedding固然不同，但是位置1和位置2的距离比位置3和位置10的距离更近，位置1和位置2与位置3和位置4都只相差1，这些关于位置的**相对含义**模型能够通过绝对位置编码get到吗？使用Learned Positional Embedding编码，位置之间没有约束关系，我们只能期待它隐式地学到，是否有更合理的方法能够显示的让模型理解位置的相对关系呢？
+
+所以就有了另一种更直观地方法——相对位置编码。下面介绍两种编码相对位置的方法：Sinusoidal Position Encoding和Complex embedding。
+
+###### **Sinusoidal Position Encoding**
+
+理想情况下，信息编码（piece of information）的设计应该满足以下条件：
+
+-  它应该为每个字（时间步）输出唯一的编码
+-  不同长度的句子之间，任何两个字（时间步）之间的差值应该保持一致
+-  我们的模型应该无需任何努力就能推广到更长的句子。它的值应该是有界的。
+-  它必须是确定性的
+
+使用正余弦函数表示绝对位置，通过两者乘积得到相对位置：
+
+$$
+PE_{(pos, 2i)} = \sin\left(\frac{{pos}}{{10000^{2i/d_{\text{model}}}}}\right)
+$$
+
+$$
+PE_{(pos, 2i+1)} = \cos\left(\frac{{pos}}{{10000^{2i+1/d_{\text{model}}}}}\right)
+$$
+
+其中，$pos$表示输入序列中的位置，$i$表示位置编码中的维度索引，$d_{\text{model}}$表示Transformer模型的隐藏单元大小。
+
+这样设计的好处是**位置的psotional encoding可以被位置线性表示，反应其相对位置关系。**以下是原论文的引用：
+
+>  We chose this function because we hypothesized it would allow the model to easily learn to attend by relative positions, since for any fixed  offset  k, PEpos+k can  be represented as a linear function  of PEpos.
+
+其中说到对于任何固定偏移 k，PEpos+k 可以表示为 PEpos 的线性函数。[这篇文章][https://kazemnejad.com/blog/transformer_architecture_positional_encoding/]就很好的讲解原理，对应添加的固定偏移offset可以通过PEpos 线性变换 dot product 一个矩阵M得到偏移后offset后的结果PEpos+k，这就包含了二者相对信息, 其中矩阵M如下：
+
+<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/image-20240219154010795.png" alt="image-20240219154010795" style="zoom:50%;" />
+
+Sinusoidal Position Encoding虽然看起来很复杂，但是证明可以被线性表示，只需要用到高中的正弦余弦公式：****
+$$
+\sin (\alpha +\beta )=\sin \alpha \cdot \cos \beta +\cos \alpha \cdot \sin \beta \\ \cos (\alpha +\beta )=\cos \alpha \cdot \cos \beta -\sin \alpha \cdot \sin \beta
+$$
+
+对于位置pos+k的positional  encoding
+$$
+PE_{(pos+k,2i)}  =  \sin(w_{i}\cdot(pos+k)) =  \sin(w_{i}pos)\cos(w_{i}k)+\cos(w_{i}pos)\sin(w_{i}k) \\
+ PE_{(pos+k,2i+1)}  =  \cos(w_{i}\cdot(pos+k)) =  \cos(w_{i}pos)\cos(w_{i}k)-\sin(w_{i}pos)\sin(w_{i}k)
+$$
+其中 $ w_ {i} $ = $\frac{1}{10000^{2i/d_{\text{model}}}}$
+
+将公式稍作调整, 就有
 
 
+对于位置的positional encoding
+
+
+
+其中
+
+将公式（5）（6）稍作调整，就有
+
+
+
+注意啦，和相对距离是常数，所以有
+
+
+
+其中为常数。
+
+所以可以被线性表示。
+
+计算和的内积，有
+
+
+
+其中.
+
+$PE_(pos+k)$和$PE_(pos)$的内积会随着相对位置的递增而减小，从而表征位置的相对距离。但是不难发现，由于距离的对称性，Sinusoidal Position Encoding虽然能够反映相对位置的距离关系，但是无法区分方向/(ㄒoㄒ)/~~
+
+$$
+PE_{pos+k}PE_{pos} = PE_{pos-k}PE_{pos}
+$$
+
+
+更加直观的对其可视化，可以看到图像关于对称，无法区分前后关系。
+
+<img src="https://mmbiz.qpic.cn/mmbiz_png/5fknb41ib9qEYdbiabicy0bnXo81GdEbQibKDII4jDFiauzFibQfZCMPo3FgALTtWe0ZIwwTUOyU16yxDtEhxib7413fg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:50%;" />
+
+> 相比起拼接（concatenate ）位置编码 ，直接相加似乎看起来会被糅合在输入中似乎位置信息会被擦除，我们可以假设拼接位置编码，设为向量$p_i$ 代表其位置信息，
+>
+> Learned Positional Embedding ，，所以这里其实也是可以看作直接相加了位置编码（学习过的），根据研究表明这个W^P^ learn 有人做过了在convolution中`seq to seq`中类似的学习参数做法效果并不是很好，还有说其实会添加很多的不必要的参数学习等（issue地址：https://github.com/tensorflow/tensor2tensor/issues/1591，https://datascience.stackexchange.com/questions/55901/in-a-transformer-model-why-does-one-sum-positional-encoding-to-the-embedding-ra
+
+
+
+这个公式中的分数部分将位置$pos$进行了缩放，并使用不同的频率分母（$10000^{2i/d_{\text{model}}}$）来控制不同维度的变化速度。这样，**不同位置和不同维度的位置编码会得到不同的数值，形成一个独特的向量表示**，
+
+1. 周期性: 使用正弦和余弦函数能够使位置编码具有周期性。使得位置编码的值在每个维度上循环变化。这对于表示序列中的不同位置非常重要，因为不同位置之间可能存在重要的依赖关系。
+2. 连续性: 正弦和余弦函数在输入空间中是连续的。这意味着相邻位置之间的位置编码也是连续的，有助于保持输入序列中的顺序信息的连贯性。
+3. 维度关联: 位置编码中的维度与Transformer模型的隐藏单元大小相关联。这意味着不同维度的位置编码会以不同的频率变化，从而能够捕捉不同尺度的位置信息。较低维度的位置编码可以更好地表示较短距离的依赖关系，而较高维度的位置编码可以更好地表示较长距离的依赖关系。
+
+<img src="file://D:/Study/Python全栈开发/人工智能/人工智能笔记本&案例/机器学习笔记本&案例/深度学习笔记本&案例/通用学习笔记/core algorithm.assets/gFfQoR.png%23shadow?lastModify=1708326365?lastModify=1708326365" alt="img" style="zoom: 33%;" />
+
+正弦位置编码的另一个特点是论文假设模型可以**毫不费力地关注相对位置**。
+
+参考文章：
+如何优雅地编码文本中的位置信息？三种positioanl encoding方法简述： https://mp.weixin.qq.com/s/ENpXBYQ4hfdTLSXBIoF00Q
 
 #### Padding Mask
 
-其中在output输入的多头注意力机制中可以看到添加了Masked（Padding Mask），
+Self Attention 所得到的序列输出 $b^i$ 看到了全部的输入序列，但是如果说不想考虑到全部的输入，比如时序预测中只能看到历史数据，只需要在计算未来时刻数据的相似性权重时，即给q , v 相似度输出默认给一个非常大的负数，在经过`softmax`就会变成0使得加权求和时避免加入未来时刻数据。
+
+其中Transformers在output输入的多头注意力机制中可以看到添加了Masked（Padding Mask），
 
 1.  传统 Seq2Seq 中 Decoder 使用的是 RNN 模型，因此在训练过程中输入 t 时刻的词，循环神经网络是时间驱动的，只有当 t 时刻运算结束了，才能看到 t+1 时刻的词。但在使用self-attention训练过程中，整个 ground truth都暴露在 Decoder 中，这显然是不对的，我们需要对 Decoder 的输入进行一些处理，**即在训练中只注意当前训练时间刻前的历史数据**
-2.  句子长度不同中，根据最长句子补齐后，对不等长的句子进行mask。
+2.  句子长度不同中，根据最长句子补齐后，**对不等长的句子进行mask**。
 
-为了屏蔽后续时间步，可以将Mask矩阵中对应位置的元素设置为一个很大的负数（例如-1e9），这样在经过Softmax函数后，注意力权重接近于零，相当于忽略了后续时间步的信息。
+> 为了屏蔽后续时间步，将Mask矩阵中对应位置的元素设置为一个很大的负数（例如-1e9），这样在经过Softmax函数后，注意力权重接近于零，相当于忽略了后续时间步的信息。
 
 假设有一个时间序列数据，长度为10，你想要关注前6个时间步的数据，而忽略后面的时间步。
 
@@ -1185,37 +1383,54 @@ Mask矩阵:
 
 这样，在进行注意力计算时，将**输入序列与Mask矩阵相加**，之后再做 softmax，就能将 - inf 变为 0，得到的这个矩阵即为每个字之间的权重，从而达到忽略后续时间步的效果。
 
-在不等长句子处理中则同理对无效句子进行masking操作即可
+> 在不等长句子处理中则同理对无效句子进行masking操作即可
 
-![img](core algorithm.assets/Jy5rt0.png#shadow)
 
-#### 残差链接和层归一化
 
-Transformer 模型使用残差连接（residual connections）来使梯度更容易传播，在进行self(自我)-attention 加权之后输出，也就是 Self(自我)-Attention(Q, K, V)，然后把他们加起来做残差连接
+<img src="core algorithm.assets/Jy5rt0.png#shadow" alt="img" style="zoom:50%;" />
 
-$Xembedding+Self-Attention(Q, K, V)$
 
-以及层归一化（layer normalization）来加速训练过程和提高模型性能。 [classical concept.md](classical concept.md)  这里有讲解关于层归一化的概念
 
-下面的图总结了以上 encode 的部分，接下来我们看关于decode的部分
+#### Transformer 输入输出细节
 
-![img](core algorithm.assets/JyCLlQ.png#shadow)
+在机器翻译任务中，一个样本是由原始句子和翻译后的句子组成的。比如原始句子是： “我爱机器学习”，那么翻译后是 ’i love machine learning‘。 则该一个样本就是由“我爱机器学习”和 "i love machine learning" 组成。
 
-Deocoder中的 Masked Encoder-Decoder Attention 唯一不同的是这里的 K,V 为 Encoder 的输出，Q 为 Decoder 中 Masked(掩盖) Self(自我)-Attention 的输出
+这个样本的原始句子的单词长度是length=4,即‘我’ ‘爱’ ‘机器’ ‘学习’。经过embedding后每个词的embedding向量是512。那么“我爱机器学习”这个句子的embedding后的维度是[4，512 ] （若是批量输入，则embedding后的维度是[batch, 4, 512]）。
 
-![img](core algorithm.assets/U3EwOx.png#shadow)
+**padding**
 
-该方法将输入的信息作为键值传入，并将对于输入的序列查询信息糅合，达到学习关联二者序列的关系，并通过最终结果训练得到最优参数。
+因为每个样本的原始句子的长度是不一样的，此时padding操作登场了，假设样本中句子的最大长度是10，那么对于长度不足10的句子，需要补足到10个长度，shape就变为[10, 512], 补全的位置上的embedding数值自然就是0了
 
-#### English to French 机器翻译案例
+**Padding Mask**
 
-在机器翻译任务中，输入是一个源语言句子（例如英文句子），输出是该句子的目标语言翻译（例如法文句子）。
+在较短的序列后面填充0到长度为N进行补齐之后。对于那些补零的数据来说，我们的attention机制不应该把注意力放在这些位置上，此时添加Mask矩阵，使得这些位置的值加上一个非常大的负数(负无穷)，这样经过softmax后，这些位置的权重就会接近0。
 
+> Transformer的padding mask实际上是一个张量，每个值都是一个Boolean，值为false的地方就是要进行处理的地方。
+
+得到补全后的句子embedding向量后，直接输入encoder的话，那么是没有考虑到句子中的位置顺序关系的。此时需要再加一个位置向量，位置向量在模型训练中有特定的方式，可以表示每个词的位置或者不同词之间的距离；总之，核心思想是在attention计算时提供有效的距离信息。
+
+关于positional embedding ，文章提出两种方法：
+
+1.Learned Positional Embedding ，这个是绝对位置编码，即直接对不同的位置随机初始化一个postion embedding，这个postion embedding作为参数进行训练。
+
+2.Sinusoidal Position Embedding ，相对位置编码，即三角函数编码。
+
+下面详细讲下Sinusoidal Position Embedding 三角函数编码。
+
+Positional Embedding和句子embedding是add操作，那么自然其shape是相同的也是[10, 512] 。
+
+Sinusoidal Positional Embedding具体怎么得来呢，
+
+
+
+
+
+1. 
+2. 
 1. 输入（Input）：
    - 源语言句子：将源语言句子进行编码，通常使用词嵌入（Word Embedding）来表示每个单词。例如，将英文句子"Hello, how are you?"转换为一系列词嵌入向量。
    - 位置编码（Positional Encoding）：为了捕捉单词在句子中的位置信息，Transformer模型引入位置编码，将位置信息与词嵌入向量相结合。
    - 输入嵌入（Input Embedding）：将词嵌入向量和位置编码向量相加，得到每个单词的最终输入表示。
-
 2. 输出（Output）：
    - 目标语言句子：目标语言句子也会进行类似的处理，将目标语言句子进行编码和嵌入表示。
    - 解码器输入（Decoder Input）：解码器的输入是**目标语言句子的编码表示**，通常会在每个目标语言句子的开头添加一个特殊的起始标记（例如\<start>）来表示解码器的起始位置。
@@ -1241,55 +1456,429 @@ Deocoder中的 Masked Encoder-Decoder Attention 唯一不同的是这里的 K,V 
 
 需要注意的是，具体任务中的输入和输出的表示方式可能会有所不同，这只是一个简单的机器翻译示例。不同任务和模型架构可能会有不同的输入和输出定义。
 
+参考文章：
+https://zhuanlan.zhihu.com/p/166608727
+
 #### 一些值得思考的问题
 
 ##### 为什么说 Transformer 在 seq2seq 能够更优秀？
 
 RNN等循环神经网络的问题在于**将 Encoder 端的所有信息压缩到一个固定长度的向量中**，并将其作为 Decoder 端首个隐藏状态的输入，来预测 Decoder 端第一个单词 (token) 的隐藏状态。在输入序列比较长的时候，这样做显然会损失 Encoder 端的很多信息，而且这样一股脑的把该固定向量送入 Decoder 端，**Decoder 端不能够关注到其想要关注的信息**。Transformer 通过使用Multi-self-attention 模块，让源序列和目标序列首先 “**自关联**” 起来，并实现全局观和并行能力，模型所能提取的信息和特征更加丰富，运算更加高效。  
 
+并且从模型的复杂度分析来看如下：
+
 ![image-20231002105641906](core algorithm.assets/image-20231002105641906.png)
 
 ##### 关于代码
 
+代码详解：http://nlp.seas.harvard.edu/2018/04/03/attention.html （Pytorch_实现，英文）
+代码详解2：https://sebastianraschka.com/blog/2023/self-attention-from-scratch.html（Pytorch实现，英文）
+代码详解3：https://github.com/EvilPsyCHo/Attention-PyTorch（Pytorch实现，该仓库非常详细，非常建议学一学）
+代码实现：https://github.com/foamliu/Self-Attention-Keras （Keras实现，结论：在这个经典的imdb数据集上的表现，只是中等。原因大致是该架构比较复杂，模型拟合需要更多的数据和轮次）
 官方代码地址： https://github.com/tensorflow/tensor2tensor
 
-http://nlp.seas.harvard.edu/2018/04/03/attention.html （Pytorch_实现）
-
-如果有能力的话，大家可以尝试一下手撕代码哦，大佬嘿嘿。
+如果有能力的话，大家可以尝试一下手撕代码哦。
 
 参考文献:
-
 https://wmathor.com/index.php/archives/1438/
-
 https://www.youtube.com/watch?v=ugWDIIOHtPA&list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4&index=62
-
 https://www.bilibili.com/video/BV1pu411o7BE/?spm_id_from=333.337.search-card.all.click&vd_source=2700e3c11aa1109621e9a88a968cd50c
-
 https://wmathor.com/index.php/archives/1453/#comment-2101
-
 https://kazemnejad.com/blog/transformer_architecture_positional_encoding/
-
 http://jalammar.github.io/illustrated-transformer/
-
 https://ifwind.github.io/2021/08/17/Transformer%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%EF%BC%887%EF%BC%89Mask%E6%9C%BA%E5%88%B6/#xlnet%E4%B8%AD%E7%9A%84mask
-
-代码详解：http://nlp.seas.harvard.edu/2018/04/03/attention.html （Pytorch_实现）
+https://zhuanlan.zhihu.com/p/26753131
 
 #### 扩展模型
 
 下面是一些对Transformer模型进行改进和扩展的其他模型：
 
-1. BERT（Bidirectional Encoder Representations from Transformers）：BERT是一种预训练的语言表示模型，通过双向Transformer编码器来学习句子的上下文相关表示。它利用了Transformer的自注意力机制和多层编码器的结构，通过大规模的无监督预训练和有监督微调，取得了在多项自然语言处理任务上的显著性能提升。
+| 模型名称                                                     | 主要特点和解决的问题                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| BERT (Bidirectional Encoder Representations from Transformers) | BERT通过使用Transformer模型进行双向预训练来解决自然语言处理（NLP）任务。它利用了双向上下文信息，可以更好地处理语义理解和生成任务，如命名实体识别、情感分析等。 |
+| GPT (Generative Pre-trained Transformer)                     | GPT是一个基于Transformer的语言生成模型。它通过在大规模文本语料上进行无监督预训练，并使用自回归方式生成文本序列。GPT能够生成连贯、富有语义的文本，适用于任务如文本生成、机器翻译等。 |
+| XLNet                                                        | XLNet通过引入自回归和自编码的目标函数来扩展BERT。它解决了BERT在处理长文本时无法利用上下文信息的问题，通过重新排列输入序列的顺序来建模全局依赖关系。XLNet在各种NLP任务中取得了优异的性能。 |
+| RoBERTa (Robustly Optimized BERT Approach)                   | RoBERTa是对BERT进行改进和优化的模型。它通过对BERT的预训练过程进行改进，如更大的批量大小、更长的训练时间等，进一步提升了模型的性能和鲁棒性。RoBERTa在多个NLP任务上取得了领先水平的结果。 |
+| GPT-2                                                        | GPT-2是GPT的改进版本，具备更多的参数和更大的模型规模。它能够生成更长、更具连贯性的文本，但也面临着参数量大、计算资源消耗高的挑战。GPT-2在文本生成和语言理解任务上取得了令人瞩目的成果。 |
+| T5 (Text-to-Text Transfer Transformer)                       | T5是一个通用的文本到文本转换模型，它可以在各种NLP任务中进行端到端训练。T5的训练目标是将不同的NLP任务转化为相同的文本生成问题，通过统一的框架来解决不同任务，使得模型更加灵活和易于使用。 |
+| GPT-3                                                        | GPT-3是GPT的进一步扩展，具备巨大的模型规模和参数量。它是目前为止最大的语言模型之一，能够生成高质量的文本、执行算术计算、进行机器翻译等多种任务。GPT-3在广泛的NLP任务和领域中展示了强大的语言理解和生成能力。 |
+| ransformer-XL                                                | Transformer-XL是对传统Transformer模型的改进，用于解决长文本建模中的上下文依赖问题。传统的Transformer模型在处理长文本时受到长度限制，无法有效利用上下文信息。Transformer-XL通过使用相对位置编码和循环机制，使得模型能够捕捉更长的上下文依赖关系。它通过存储先前的隐藏状态，使得模型可以在不同的片段之间重用先前的上下文信息，从而更好地处理长文本序列。Transformer-XL在语言建模和文本生成任务中取得了显著的改进。 |
 
-2. GPT（Generative Pre-trained Transformer）：GPT是一种基于Transformer的预训练语言生成模型。它通过自回归的方式，使用Transformer的解码器部分来生成文本。GPT模型在大规模文本语料上进行预训练，并通过微调在各种任务上展现出出色的语言生成和理解能力。
+这些模型都是基于Transformer架构进行改进和扩展的，通过增加参数、改变预训练目标、引入新的训练技巧等方式，进一步提升了模型在自然语言处理任务中的性能和表现。
 
-3. XLNet：XLNet是一种自回归和自编码混合的预训练语言模型。不同于BERT模型的双向预训练，XLNet采用了排列语言模型（Permutation Language Model）的方法，通过随机遮盖和预测全局排列来学习句子的上下文表示。这种方法能够更好地捕捉句子内部的依赖关系，提高了模型的性能。
+###  Comformer
 
-4. Transformer-XL：Transformer-XL是一种具有记忆能力的Transformer模型。它通过引入相对位置编码和循环机制，解决了标准Transformer模型在处理长文本时的限制。Transformer-XL能够有效地捕捉长距离依赖关系，并保持对先前信息的记忆，从而提高了模型的上下文理解能力。
+Conformer是Google在2020年提出的语音识别模型，基于Transformer改进而来，主要的改进点在于Transformer在提取长序列依赖的时候更有效，而卷积则擅长提取局部特征，因此将卷积应用于Transformer的Encoder层，同时提升模型在长期序列和局部特征上的效果，实际证明，该方法确实有效，在当时的LibriSpeech测试集上取得了最好的效果。
 
-5. Reformer：Reformer是一种通过优化Transformer模型的存储和计算效率的方法。它引入了可逆网络层和局部敏感哈希（Locality Sensitive Hashing）等技术，以减少内存消耗和加速自注意力计算。Reformer模型在大规模数据和长序列上具有很好的可扩展性，并在多项任务上取得了优异的性能。
+Wenet是出门问问语音团队联合西工大语音实验室开源的一款面向工业落地应用的语音识别工具包，该工具用一套简洁的方案提供了语音识别从训练到部署的一条龙服务，Wenet目前在github上获得了上千个stars，其易用性深受用户好评。
 
-这些模型都是对Transformer模型的改进和扩展，通过引入不同的结构和训练策略，提高了模型在自然语言处理和其他领域任务中的表现。它们的出现丰富了深度学习模型的选择，并推动了自然语言处理领域的发展。
+### Linformer：线性复杂性的自我关注
 
-# 自监督学习
+28000+ star
 
+https://paperswithcode.com/paper/linformer-self-attention-with-linear
+
+### [Vision Transformers](https://paperswithcode.com/paper/separable-self-attention-for-mobile-vision)
+
+## 生成式模型
+
+### 生成式对抗网络（Generator Adversarial Networks）
+
+传统神经网络需要一个人类科学家精心设计的成本函数来指导学习，无监督学习为了解决这一问题，利用生成式对抗网络（Generator Adversarial Networks）对机器进行对抗训练（Adversarial Training）成了关键答案。
+
+生成式对抗网络（Generator Adversarial Networks）是一种面向无监督学习的神经网络：它带有一个发生器（Generator），从随机输入中生成某类假数据（比如，假的图片）；假数据和来自世界的真数据会一起输入一个判别器（Discriminator）中，等待判别器裁决。
+
+两者的关系就像一个骗子和一个测谎者。判别器这位测谎者要不断优化自己，尽可能地识别出发生器生成的“假图像”，防止自己被骗；而生成器这个骗子为了瞒过判别器，也必须不断进步。在这种动态的对抗中，生成器会得到训练，最后开始生成非常真实的图片，这意味着生成器掌握了图像的特征，自己掌握成本函数——某种意义上，这就是无监督学习。
+
+### VAE
+
+# 无监督学习
+
+> 重要性
+
+Facebook 首席人工智能科学家、纽约大学教授 Yann LeCun、卷积神经网络（CNN, Convolutional Neural Nets）的发明人之一曾这样说道：“如果人工智能是一块蛋糕，强化学习（Reinforcement Learning）就是蛋糕上的一粒樱桃，而监督学习（Supervised Learning）是蛋糕外的一层糖霜，但无监督学习/预测学习（Unsupervised/Predictive Learning）才是蛋糕本身。目前我们只知道如何制作糖霜和樱桃，却不知道如何做蛋糕” ，从这我们可以足以看到无监督学习的重要性。**无监督学习是实现稳健和通用表示学习的重要垫脚石。**
+
+> 无监督学习困难
+
+其中，无监督学习的一大困难之处在于：**对不确定性的预测**。比如当你将一支笔直立在桌面上时，松开手的那一刻，你并不知道这只笔将会朝哪个方向倒下。如果系统回答这只笔会倒下，却判断错误了倒下的方向，我们需要告诉系统，**虽然你不是完全正确，但你的本质上是正确的，我们不会惩罚你**。`此时需要引入曲面的成本函数，只要系统回答在曲面之下的数据，都是正确的答案。` 
+
+此外，并不总是**清楚理想的表示是什么**，以及是否有可能在没有额外监督或专门化特定数据模态的情况下学习这种表示。无监督学习最常见的策略之一是**预测未来、缺失或上下文信息**。这种预测编码的想法是数据压缩信号处理中最古老的技术之一。在神经科学中，预测编码理论表明大脑可以**预测不同抽象级别的观察结果** （这和我们生活高度抽象事情是一样的，比如我们没有经历过这件事，但通过想象这件事发生的感受）。无监督学习工作已经成功地利用这些想法通过预测相邻单词来学习单词表示，等等。
+
+参考文章：
+https://en.jiemian.com/article/1198715.html、
+
+
+
+### 自监督学习
+
+自监督学习是一种特殊的无监督学习方法，它利用数据自身的结构或信息进行训练。在自监督学习中，**数据被人工设计成具有某种隐含标签或任务**，然后模型通过解决这个任务来进行训练。关键思想是让模型无需手动标签即可学习数据表示。如通过**对抗学习、聚类等方法**，提取出一些高效、鲁棒、通用的特征，然后通过少量有监督的数据微调模型，让有表征能力的“通用特征”进一步升级成具有区分性的“专属特征”，那么它就可以用较少量的标记数据用于下游任务，以达到与没有自监督学习的模型相似或更好的性能。
+
+> 自监督训练的目的就是使用大量没有标签的数据和少量带标签的数据训练模型，以实现降低标注成本、降低迁移成本的目的。
+
+自监督学习步骤
+
+> 1. 基于对数据的理解，以编程方式从未标记的数据**生成输入数据和标签**，
+>
+> 2. 预训练：训练encoder，获得一些高效、鲁棒、通用的特征表示，他们不对应任何具体的下游任务，仅仅提取一些自认为可靠的特征出来。
+>
+> 3. Fine-tune：使用预训练的模型作为初始权重来训练感兴趣的任务，将前面得到的“乐高积木”进一步组合成为“树枝”、“耳朵”、“四肢”等有区分性的专属特征。实现语音识别、声音事件检测、说话人识别、语音唤醒等等下游任务。
+>
+>    如果我们在第二步中使用带有手动标签的数据而不是自动生成的标签，那么它将受到监督预训练，称为迁移学习的一个步骤。
+
+自监督学习在文本、图像/视频、语音和图形等多个领域取得了成功。本质上，自我监督学习挖掘未标记的数据并提高性能。就像 Yann Lecun 的人工智能大蛋糕的比喻一样，这种自监督学习（蛋糕）每个样本可以**吃数百万次**，而监督学习（糖霜）**只能吃 10 到 10,000 口**。也就是说，自监督学习比监督学习能够从每个样本中获得更多有用的信息。
+
+人类生成的标签通常关注数据的特定视图。例如，我们可以只用“马”一词来描述草地上的一匹马的图像进行图像识别，并提供像素坐标进行语义分割。然而，数据中有更多的信息，例如，马的头和尾巴位于身体的另一侧，或者马通常在草地上（而不是在下面）。这些模型可以直接从数据中学习更好、更复杂的表示，而不是手动标签。更不用说手动标签有时可能是错误的，这对模型是有害的。一项实验研究表明，清理 PASCAL 数据集可以将 MAP 提高 13。即使没有与最先进的技术进行比较，我们仍然可以看到错误标签可能会导致性能更差。
+
+> 此外，在许多预训练（迁移学习）场景中，数据标记成本高昂、耗时且劳动密集型。此外，监督学习方法需要针对新数据/标签和新任务使用不同的标签。更重要的是，事实证明，对于基于图像的任务（即图像识别、对象检测、语义分割），自监督预训练甚至优于监督预训练。
+>
+> **换句话说，直接从数据中提取信息比手动标注更有帮助。**根据任务的不同，现在或不久的将来可能不需要许多昂贵的标签来进行更先进的自我监督学习。
+
+通常，当自监督模型发布时，我们可以下载预训练的模型（有许多在线可提供下载的预训练模型，如hugging face)。可以对预训练的模型进行微调，并将微调后的模型用于特定的下游任务。例如，最著名的自监督学习示例可能是 BERT。BERT 以自我监督学习方式对 33 亿个单词进行了预训练。我们可以针对文本相关任务（例如句子分类）对 BERT 进行微调，比从头开始训练模型所需的工作量和数据要少得多。
+
+#### 面对生成学习的自监督
+
+**恢复原始信息**
+a．非自回归：屏蔽标记/像素并**预测屏蔽**的标记/像素（例如，屏蔽语言建模（MLM））
+b．自回归：预测**下一个**标记/像素;
+
+<img src="https://img-blog.csdnimg.cn/d355c82413d745f2b04eb8d94c1f5b83.png" alt="在这里插入图片描述" style="zoom:50%;" />
+
+通过周围数据预测屏蔽输入是最早的自监督方法类别。这个想法实际上可以追溯到这句话，“你应该通过它所陪伴的人来认识一个单词。”——约翰·鲁珀特·费斯（John Rupert Firth，1957），一位语言学家。这一系列算法始于 2013 年文本领域的 word2vec。word2vec 的连续词袋 (CBOW) 的概念是通过其邻居来预测中心词，这与 ELMo和BERT 的掩码语言建模 (MLM)不同。这些模型都被归类为非自回归生成方法。主要区别在于，后来的模型使用了更先进的结构，例如双向 LSTM（用于 ELMo）和 Transformer（用于 BERT）。
+
+> 在语音领域，Mockingjay屏蔽了连续特征的所有维度，而 TERA 屏蔽了特征维度的特定子集。在图像领域，OpenAI 应用了 BERT 机制。在图领域，GPT-GNN 还屏蔽了属性和边。这些方法都屏蔽了部分输入数据并试图将它们预测回来。
+
+另一种生成方法是预测下一个标记/像素/声学特征（自回归）。在文本领域，GPT系列型号是该类别的先驱。APC和 ImageGPT 分别在语音和图像领域应用了相同的思想。有趣的是，由于相邻的声学特征很容易预测，因此通常要求模型预测后面序列中的标记（至少 3 个标记之外）。
+
+自监督学习（尤其是 BERT/GPT）的巨大成功促使研究人员将类似的生成方法应用于图像和语音等其他领域。然而，对于图像和语音数据，生成屏蔽输入更困难，因为选择有限数量的文本标记比选择无限数量的图像像素/声学特征更容易。性能改进不如文本字段。因此，研究人员在接下来的会议中还开发了许多其他非生成方法。
+
+#### 面对预测学习的自监督
+
+基于数据的理解、聚类或数据增强来设计标签
+a：预测上下文（例如，预测图像块的相对位置，预测下一个片段是否是下一个句子）
+b：预测聚类每个样本
+c：预测图像旋转角度
+
+<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/image-20240106205108487.png" style="zoom:50%;" />
+
+主要思想是设计更简化的目标以避免数据生成。最关键和最具挑战性的一点是任务需要处于适当的难度级别才能让模型学习。
+
+例如，在预测文本字段中的上下文时，BERT 和 ALBERT 都预测下一个片段是否是下一个句子。BERT 通过随机交换下一个片段与另一个片段（**下一句预测；NSP**）来提供负训练样本，而 ALBERT 通过交换上一个和下一个片段（**句子顺序预测；SOP**）来提供负训练样本。SOP 已被证明优于 NSP。
+
+>  一种解释是，通过主题预测很容易区分随机句子对，以至于模型没有从 NSP 任务中学到太多东西；而SOP允许模型学习连贯关系。因此，需要领域知识来设计好的任务和实验来验证任务效率。
+
+像 SOP 一样预测上下文的想法也应用于图像领域（预测图像块的相对位置）和语音领域（预测两个声学特征组之间的时间间隔）。
+
+另一种方法是通过聚类生成标签。在图像领域，DeepCluster应用了k-means聚类。在语音领域，HuBERT 应用了 k 均值聚类，而 BEST-RQ 采用了随机投影量化器。
+
+图像领域的其他任务有：通过图像的颜色通道预测灰度通道（反之亦然；），重建图像的随机裁剪块（即修复；），重建原始分辨率的图像 ，预测图像的旋转角度 ，预测图像的颜色并解决拼图游戏。
+
+#### 面对对比学习的自监督
+
+对比学习是为了在不关注样本全部细节的情况下，训练一个Encoder将样本转化为表征（representation，比如用一个编码器将数据编码成高维向量，就可以将得到的向量称为是数据的representation），使得representation包含了更显著的、重要的、有区分度的特征，学到这样的表示之后，用来帮助提升下游任务的性能。
+
+> 对比学习的关键方法是根据对数据的理解生成正负训练样本对。模型需要学习一个函数，**使得两个正样本具有较高的相似度分数，两个负样本具有较低的相似度分数**。因此，适当的样本生成对于确保**模型学习数据的底层特征/结构**至关重要。
+
+Encoder可以将高维数据**压缩到更紧凑**的潜在嵌入空间中进行编码的表示以学习对（高维）信号不同部分之间的底层共享信息，其丢弃了更局部的低级信息和噪声**更容易建模**。但是预测高维数据的挑战之一是均方误差和交叉熵等单峰损失不是很有用，如果直接建模源数据和特征的复杂关系导致除了模型计算量很大之外，提取 x 和 c 之间的共享信息可能不是最佳的。（例如，图像可能包含数千位信息，而类标签等高级潜在变量包含的信息要少得多（1024 个类别为 10 位）），我们就需要一个强大有效而精炼的Encoder编码器。
+
+`但是对于一个encoder来说，怎么样的encoder是好的encoder呢？`
+
+autoencoder的训练过程中要求encoder作用过后得到的latent vector被decoder解码后得到的新的matrix和raw matrix的reconstruction error尽可能小，更好的可解释性，更强的代表性和区分度。
+
+> 所谓区分度，举个例子说明：有三个样本组成的集合{x，x+，x-}， x+ 表示和 x 相似的样本， x- 表示和 x 不相似的样本，“区分度”意味着，x 的representation和 x+ 的representation要较为相似，而 x 的representation和 x- 的representation要较不相似，那样的representation就是有区分度的。
+
+`那么如何去判断encoder编码器足够好呢？`
+
+这应该就是Contrastive对比学习的思路，我们通过引入一个**Discriminator**（判别器）来判断编码好坏，这里我们以Discriminator（判别器）为二分类判别器：
+
+> 如下图，首先我们把原来的image数据和编码后的latent vector构建数据集，例如用(Xi, yi)，其中yi是Xi经过encoder后编码的latent vector。我们训练Discriminator，在面对(Xi,yi)告诉discriminator这是positive sample，你该给它高分（1分），然后我们把所有样本（常常是一个batch里的）和与之对应编码器编码的latent vector打乱，比如我们把(Xi,yj)配对放进discriminator，告诉discriminator，这是negetive sample， 应该给它们0分。
+>
+> <img src="https://img-blog.csdnimg.cn/c53036ae7f074cc79c6e3d627208f065.png" alt="在这里插入图片描述" style="zoom:50%;" />
+>
+> 训练好一部分数据后，我们拿一些discriminator没见过的组给它，让discriminator去做二分类，判断输入的(X,y)是不是对应的raw data和latent vector。如果discriminator的识别准确率很高，说明编码所编码的特征是具有分辨度的，否则说明我们很难将encoder学到的latent vectors分开，也就是说这些latent vector是**不够具有代表性**的。
+
+这里讲这个例子是为了提到这种“把encoder好不好的问题转换为encoding出来的vector和原数据配对后 真假样本能不能被一个分类器分开”的思路，**即通过模型来验证**，我们认为好的latent vector能让classifier比较容易地**把正确的latent vector和随机的latent vector 分开。**
+
+按照上面的思路，我们来理解一下对比学习的目标。
+
+用 s(a, b) 表示计算 a 和 b 的相似度，f(·) 表示能将 x 转化为representation的映射函数，x+ 是相似样本，x- 是非相似样本，则对比学习的目标就是学习这个映射函数 f(·)，使得 f(·) 满足下面的式子：
+
+$$
+s(f(x),f(  x^ {+}  ))>>s(f(x),f(  x^ {-}  ))
+$$
+
+
+比较朴素的向量相似度的计算方式就是向量内积。我们假设s(a,b)表示a和b的内积，那么希望给定一个样本x，要使得x的representation和所有x+的representation的内积尽可能大，而x和所有x-的representation的内积尽可能小，那么就是下面公式的期望尽可能的大：
+
+$$
+\frac{e^{f(x)^{T}f(x^+)}}{e^{f(x)^{T}f(x^+)} +e^ {f(x)^ {T}f(x^ {-})} }
+$$
+根据最大化期望的目标，可以得到损失函数的形式如公式所示：
+$$
+E[-\log(\frac{e^{f(x)^{T}f(x^+)}}{e^{f(x)^{T}f(x^+)}+e^{f(x)^{T}f(x^-)}})]
+$$
+通常在实践中会设定每一轮优化时，采样N个样本，用1个相似本和N-1个不相似样本（可以是随机，根据分布）来计算损失，那么这个Loss就可以看做是一个 N 分类的交叉熵Loss，所以对比学习的损失函数又被表示成下面的公式(该损失函数在对比学习的文章中被称为 InfoNCE  Loss)：
+
+$$
+E[-\log(\frac{e^{f(x)^{T}f(x^+)}}{e^{f(x)^{T}f(x^+)}+\sum_{j=1}^{N-1}e^{f(x)^{T}f(x^-)}})] 
+$$
+该公式便是噪声对比估计（NCE）的损失函数，那么对上面的这个损失函数进行优化，就可以完成我们的最初的目标，也就是让x经过 f(·) 映射函数之后，得到的编码和 x+ 的编码相似度尽可能高，和 x- 的比编码相似度尽可能低。这是对比学习的一个通用的目标。其实这个优化过程和负采样的思路是相通的，做NLP的朋友应该熟悉word2vec词向量，word2vec有两个加速训练的方法，其中一个就是负采样，负采样可以i避免在整个词典上进行softmax时候计算量巨大的问题，而对比学习也是为了不对全局的特征进行建模，只关注重要的特征。
+
+参考：
+https://blog.csdn.net/sinat_34604992/article/details/108385380
+
+##### CPC 奠基之作
+
+CPC是谷歌 DeepMind团队2019年发布的一篇论文《**Representation Learning with Contrastive Predictive Coding**》。改论文提出了一种**通用**的无监督学习方法 —— 一个用于提取紧凑潜在表示以编码对未来观察的预测的框架，从高维数据中提取有用的表示，称之为对比预测编码（Contrastive Predictive Coding）。所得模型——对比预测编码（CPC）——应用于广泛不同的数据模态、图像、语音、自然语言和强化学习，并表明**相同的机制**可以学习这些领域中**每个领域的有趣的高级信息**，其**性能优于其他方法**。
+
+###### **核心思想**
+
+模型思想重点在于representation learning（找到raw data的好的representation vector（也叫hidden vector/ latent vector)，并希望这个representation有很好的predictive的能力。）
+
+我们根据Contrastive的对比学习思想，原文的Discriminator判别器的作用是用于使得Encode编码的latent vector满足时序特征，并尽可能保留原始信息更多信息，具体来说**原文Discriminator判别器采用的模型是预测模型（自回归）来验证特征**。通过输入过去时刻z(t-1)、z(t-2)、z(t-3)、z(t-4) 的编码特征输入到自回归模型后得到的预测值c(t)经过变换，可以与未来时刻z(t+1)、z(t+2)、z(t+3)、z(t+4)的编码特征尽量的接近。**即，c(t)通过一些变换后，可以很好的用来重构未来的特征z(t+k)。**
+
+> 在时间序列和高维建模中，自回归模型使用下一步预测的方法利用了信号的**局部平滑度**。当进一步预测未来时，共享信息量会变得更低，模型需要推断出**更多的全局结构**。这些跨越许多时间步骤的“**慢特征**”(通用特征）通常更有趣（例如，语音中的音素和语调、图像中的对象或书籍中的故事情节）。
+
+我们首先看预测编码流程架构如下图（音频为例输入，原文对图像、文本和强化学习使用相同的设置）。首先Encoder将输入的观测序列 xt 映射到潜在表示序列 zt = Encoder(xt)，并将 论文里是一般性地用 gar 来表示这个可以做预测的有回归性质的model，通常大家会用非线性模型或者循环神经网络。<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/image-20240131205036998.png" alt="image-20240131205036998" style="zoom: 50%;" />
+
+ 我们用t时刻及其之前的若干时刻输入这个回归模型，自回归模型将总结潜在空间中的所有 z≤t时刻的编码特征并生成上下文潜在表示 ct = gar(z≤t)，即涵盖了对过去信息的memory的输出ct。
+
+`此时我们希望ct是足够好的且具有预测性质的，那么如何评价它好不好呢？`
+
+我们可以通过用ct去预测之后k个时刻的latent vector（k是我们感兴趣的预测的步长）这里记作$z^t+1,z^t+2,...,z^t+k$, 然后我们希望 z^t+i （预测的latent vector）和 zt+i (真实的 xt+i 的latent vector）尽可能相似。论文采用直接用使用简单的对数双线性模型对ct进行变换，通过 W1,W2,...,Wk 乘以 ct 做的预测，
+
+fk(x)是z(t+k)和c(t)的相似性度量函数，可以是函数形式、可以是内积、也可以是余弦距离。z(t+k)是t时刻起，未来第k帧的潜在特征,每一个k都对应了一个fk(x)。xj∈Xn（n=1,2,3...N）参与loss计算的这个N个样本中，有1个正样本z(t+k)，和N-1个负样本，其中负样本是随机从其他时刻采样的值。整个损失函数的目的是使z(t+k)跟[W(k)c(t)]的相似度尽量的高，跟其他负样本的相似度尽量的低，这样loss才能尽可能的小。
+
+然后用向量内积来衡量相似度。（也可以用非线性网络或循环神经网络）
+
+这样就得到了论文所提出了的相似度函数
+
+ $ f_ {k} $ ( $ x_ {t+k} $ , $ c_ {t} $ )=exp( $ z_ {t+k}^ {T} $ $ W_ {k} $ $ c_ {t} $ )
+
+其中 fk()表示计算 ct 的预测和 xt+k （真实的未来值）符不符合。
+
+`那么得到了相似度函数，我们要如何评价总体的特征编码效果好不好以设置损失函数呢？`
+
+原论文提出了用了正样本分数分布与负样本分数比值来进行评价，公式： $ \frac {p(x_ {t+k|ct})}{p(x_ {t+k})} $  
+
+> 假设给定了选取X={x1,x2,...,xN}共N个随机样本，包含了一个是来自于${p(x_ {t+k|ct})}$ 的正样本 ,和其他来自*proposal* distribution（提议分布）${p(x_ {t+k})}$的N-1个负样本negative sample（noise sample）
+
+这个分布表示了模型编码的分数好坏，模型编码效果越好分数比值的值越大（越靠近1），而相似度函数中则是计算分数的，那么有公式 $ f_ {k} $ ( $ x_ {t+k} $ , $ c_ {t} $ ) $ \infty $ $ \frac {p(x_ {t+k|ct})}{p(x_ {t+k})} $ ，即**正样本的相似度函数**是和$ \frac {p(x_ {t+k|ct})}{p(x_ {t+k})} $ 是正相关的，也就是说fk()值越大相似度越大，预测效果越好，那么模型特征表征也就越好，那么设计损失函数便是将 $ \frac {p(x_ {t+k|ct})}{p(x_ {t+k})} $ 最大化，这样我们就得到了最终的损失函数表达如下（Noise-Contrastive Estimation(NCE) Loss, 在这篇文献里定义为InfoNCE）
+
+$$
+L_{N}=−E[log\frac{f_{k}(x_{t+k},c_{t})}{Σ_{x_{j}∈X}f_{k}(x_{j},c_{t})}]
+$$
+其中分母是负样本的分数之和（从分布中选取全部的负样本），最终的对数分布比期望越小时，$ \frac {p(x_ {t+k|ct})}{p(x_ {t+k})} $  越大。
+
+> 看到一个很好的思路，这里引用以下	：
+>
+> `为什么负采样是在整段序列上进行采样，那样不是会采样到窗口内的单词吗？`
+>
+> 我们知道，正样本来源于 t 时刻的一定窗口内的单词，按照正常思路，负样本应该来源于窗口以外的单词，这里有一个问题，假如一段长的序列，窗口内的单词在窗口外也出现了（比如“你，我”等常见词），这仍然不能避免负采样取到窗口内单词。所以作者直接在整段序列上进行负采样，负样本来源于整段序列的分布，正样本来源于窗口内单词的分布，这样做是为了让模型在给定一个context情况下判断某个样本来源于窗口内分布还是整段序列的噪声分布，也就是只需要模型可以**区分窗口内分布和整段序列的噪声分布**，这其实是一种退而求其次的方法，因为负采样本身就是为了避免在整个词典上进行softmax的开销过大问题，假如纠结负采样会采样到真实样本，那么干脆直接不要负采样，就在整个词典上进行 正样本与其他单词的区分就好了（这样做显然是没必要的）。所以，CPC论文的负采样就直接在整段序列上进行采样，当序列长度足够长，且负采样的次数足够多时，这么做是能够很好的模拟真实噪音分布的，而CPC的论文实验部分也证明了这一点。
+
+最终编码器和自回归模型都将经过训练，将共同优化基于 NCE 的损失。其中将通过自回归模型的训练来反向使优化编码器编码。
+
+我们再来总结一下，为了训练得到有效的Encoder编码器，论文引入了一个Decriminator 自回归模型来验证编码好坏，其中使用了相似度函数和正负样本分数比来作为评价指标，通过同时训练自回归模型和编码器最终得到良好的Representation learning 表示学习。
+
+###### **算法实践**
+
+我们在训练好模型之后，可以使用的训练好encoder部分或者encoder+自回归模型提取数据的特征用于不同的下游任务，或者在模型后面串接一个小型的微调网络，然后通过cross entropy或者CTC等任务的损失函数即可实现下游任务的训练。
+
+算法代码实现库：
+算法的 Keras 实现：https://github.com/davidtellez/contrastive-predictive-coding
+Github复现主题系列：https://github.com/topics/contrastive-predictive-coding
+
+参考：CPC的效果并不如监督训练的效果好，但它引入了一个很好的自监督训练思想，才有了后面的里程碑似的成果——wav2vec2.0。
+
+参考文章：
+非常感谢这篇文章，给我了很大的思路和帮助：https://zhuanlan.zhihu.com/p/129076690
+https://blog.csdn.net/sinat_34604992/article/details/108385380
+
+##### 图像领域对比学习
+
+图像领域的对比学习应用来自同一原始图像的**两种不同的数据增强来生成正样本对**，并使用两个**不同的图像作为负样本对**。
+
+最关键和最具挑战性的两个部分是**增强的强度和负样本对的选择**。如果增强太强以至于同一样本的两个增强样本之间没有关系，则模型无法学习。同样，如果增强量太小以至于模型可以轻松解决问题，那么模型也无法为下游任务学习有用的信息。至于选择负样本对，如果我们随机分配两个图像作为负样本对，它们可能是同一类（例如，猫的两个图像），这会给模型带来冲突的噪声。如果负对很容易区分，那么模型就无法学习数据的底层特征/结构。对比学习最著名的例子是 SimCLR (v1，v2）和MoCo（v1，v2），总的来说就是要让任务足够困难让模型能够很好的学习到数据的底层特征/结构.
+
+##### 音频领域对比学习
+
+对于语音领域，一种方法是应用像 SimCLR ( Speech SimCLR ) 这样的增强。另一种方法是**使用相邻特征作为正对，使用不同样本的特征作为负对**（例如，CPC、 Wav2vec ( v1 , v2.0 ) 、VQ-wav2vec和Discret BERT）。
+
+##### 文本领域对比学习
+
+相对来说NLP领域的对比学习受到了CV领域的启示，整体发展比较零散，脉络感没有那么强，此处，我们主要选择了无监督领域比较有代表性的ConSERT[16]以及SimCSE[17]来进行介绍，对于有监督领域则主要介绍R-Drop[18]。
+
+参考文章：
+
+https://blog.csdn.net/chumingqian/article/details/131351085
+https://zhuanlan.zhihu.com/p/39928037
+https://zhuanlan.zhihu.com/p/528648578
+
+# 多模态学习
+
+人类使用五种感官来体验和解释周围的世界。我们的五种感官从五种不同的来源和五种不同的方式捕获信息。模态是指某事发生、经历或捕捉的方式。人工智能正在寻求模仿人类大脑。
+
+多模态学习在这里不同与有无监督的划分了, 多模式深度学习是一个机器学习子领域，旨在训练人工智能模型来处理和发现不同类型数据（模式）之间的关系——通常是图像、视频、音频和文本。通过结合不同的模态，深度学习模型可以更普遍地理解其环境，因为某些线索仅存在于某些模态中。想象一下情绪识别的任务。它不仅仅是看一张人脸（视觉模态）。一个人的声音（音频模态）的音调和音高编码了大量关于他们情绪状态的信息，这些信息可能无法通过他们的面部表情看到，即使他们经常是同步的。
+
+**模态表示**
+多模态表示分为两类。
+
+1. 联合表示: 每个**单独的模态**被编码，然后**放入一个相互**的高维空间。这是最直接的方式，当模态具有相似的性质时可能会很有效。
+2. Coordinated representation:  每个单独的模态都被编码而**不考虑彼此**，但是它们的表示然后**通过施加限制来协调**。例如，它们的线性投影应该最大程度地相关
+
+**模态融合**
+融合是将来自两种或多种模式的信息结合起来以执行预测任务的任务。
+
+- 由于多模态数据的异构性，多模态（如视频、语音和文本）的有效融合具有挑战性。
+
+**模态对齐**
+对齐是指识别不同模态之间的**直接关系**的任务。
+
+**模态转换**
+模态转换是将一种模态映射到另一种模态的行为。主要思想是如何将一种模态（例如，文本模态）转换成另一种模态（例如，视觉模态），同时保留语义。
+
+ **模态共同学习**
+多模式共同学习旨在将通过一种或多种模式学习的信息转移到涉及另一种模式的任务。在低资源目标任务、完全/部分缺失或嘈杂模式的情况下，共同学习尤为重要。
+
+> **多模态应用场景**
+
+**图像领域**
+
+图像字幕是为给定图像生成简短文本描述的任务。这是一项多模态任务，涉及由图像和短文本描述组成的多模态数据集。它通过将视觉表示转换为文本表示来解决前面描述的翻译挑战。该任务还可以扩展到视频字幕，其中文本连贯地描述短视频。
+
+对于将视觉模式转换为文本的模型，它必须捕获图片的语义。它需要检测关键对象、关键动作和对象的关键特征。参考图例。“一匹马（关键对象）背着（关键动作）干草（关键对象）的大负载（关键特征）和两个人（关键对象）坐在上面。” 此外，它需要推断图像中对象之间的关系，例如，“双层床下面有一个狭窄的架子（空间关系）。”
+
+然而，正如已经提到的，多模态翻译的任务是开放式的和主观的。因此，标题“两个人骑着装满干草的马车”和“两个人用马车运送干草”也是有效的标题。
+
+图像字幕模型可用于提供图像的文本替代方案，从而帮助盲人和视障用户, 或是将图像的状态用文本快速描述, 如后厨行为识别,
+
+<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/6f7dfdd2fe6c48ca8875bce05c4afcf6.png" alt="在这里插入图片描述" style="zoom: 33%;" />
+
+
+
+多模态数据集
+没有数据，就没有学习。
+
+多模态机器学习也不例外。为了推进该领域，研究人员和组织已经创建并分发了多个多模式数据集。以下是最受欢迎的数据集的完整列表：
+
+医疗数据链接
+
+5.1 COCO-Captions 数据集：
+一个多模式数据集，包含 330K 图像并附有简短的文本描述。该数据集由微软发布，旨在推进图像字幕研究。
+
+5.2 VQA
+：一个视觉问答多模态数据集，包含 265K 个图像（视觉），每个图像至少有三个问题（文本）。这些问题需要理解视觉、语言和常识知识才能回答。适用于视觉问答和图像字幕。
+
+5.3CMU-MOSEI
+：Multimodal Opinion Sentiment and Emotion Intensity (MOSEI) 是一个用于人类情绪识别和情绪分析的多模态数据集。它包含 23,500 个句子，由 1,000 名 YouTube 演讲者发音。该数据集将视频、音频和文本模式合二为一。用于在三种最流行的数据模式上训练模型的完美数据集。
+
+5.4.Social-IQ
+：一个完美的多模态数据集，用于训练视觉推理、多模态问答和社交互动理解方面的深度学习模型。包含 1250 个音频视频（在动作级别），并带有与每个场景中发生的动作相关的问题和答案（文本）。
+
+5.5 Kinetics 400/600/700
+：此视听数据集是用于人类动作识别的 Youtube 视频集合。它包含人们执行各种动作的视频（视觉模态）和声音（音频模态），例如播放音乐、拥抱、进行运动等。该数据集适用于动作识别、人体姿势估计或场景理解。
+
+5.6.RGB-D 对象数据集
+：结合了视觉和传感器模态的多模态数据集。一个传感器是 RGB，对图片中的颜色进行编码，而另一个是深度传感器，对物体与相机的距离进行编码。该数据集包含 300 个家庭物品和 22 个场景的视频，相当于 250K 张图像。它已被用于 3D对象检测或深度估计任务。
+其他多模式数据集包括IEMOCAP、CMU-MOSI、MPI-SINTEL、SCENE-FLOW、HOW2、COIN和MOUD
+
+#### **多模态架构**
+
+多模态神经网络通常是多个单模态神经网络的组合。例如，视听模型可能由两个单峰网络组成，一个用于视觉数据，一个用于音频数据。这些单峰神经网络通常分别处理它们的输入。这个过程称为**编码**。在进行单峰编码之后，必须将从每个模型中提取的信息**融合**在一起。已经提出了多种融合技术，范围**从简单的连接到注意机制**。多模态数据融合过程是最重要的成功因素之一。融合发生后，最终的“决策”网络接受融合后的编码信息，并接受最终任务的训练。
+
+简单来说，多模态架构通常由三部分组成：
+
+1. 编码单个模态的单峰编码器。通常，每个输入模式一个。
+2. 一种融合网络，在编码阶段结合从每个输入模态中提取的特征。
+3. 接受融合数据并进行预测的分类器。
+
+我们将以上称为编码模块（下图中的 DL 模块）、融合模块和分类模块。
+
+<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/5d3971c210d04714930465b83719c842.png" alt="在这里插入图片描述" style="zoom:67%;" />
+
+##### 模态编码
+
+在编码过程中，我们寻求创建有意义的表示。通常，每个单独的模态由不同的单模态编码器处理。但是，通常情况下输入是嵌入形式而不是原始形式。
+
+例如，word2vec 嵌入可用于文本;
+而 COVAREP(一个基于matlab开发的语音库) 嵌入可用于音频。
+多模态嵌入，如data2veq，将视频、文本和音频数据转换为高维空间中的嵌入，是最新的实践之一，并且在许多任务中优于其他嵌入，实现了 SOTA 性能。
+
+> 通常当模态**在本质上是相似**时，使用**联合表示的方法效果很好**，并且是最常用的方法。
+
+在设计多模态网络的实践中，编码器的选择是**基于在每个领域表现良好的编码器**，
+因为**更加强调融合方法的设计**。
+
+- 许多研究论文使用经典的 ResNets 作为视觉模式，
+- 使用RoBERTA作为文本。
+
+##### 模态融合
+
+融合模块负责在特征提取完成后组合每个单独的模态。用于融合的方法/架构可能是成功的最重要因素。
+
+最简单的方法是使用简单的操作，例如连接或求和不同的单峰表示。
+
+> 然而，更具有经验和成功的方法，已经被研究出来了。例如，**交叉注意力层机制**是最近成功的融合方法之一。它已被用于以更有意义的方式捕获跨模态交互和融合模态。
+
+下面的等式描述了交叉注意力机制，并假设您基本熟悉自注意力。
+
+ $ \alpha_{kl}  = s(  \frac {K_ {1}Q_ {k}}{\sqrt {d}}  )  V_ {l} $ 
+
+ 表示注意力得分向量，s(.)表示softmax函数，K、Q和V分别是注意力机制的Key、Query和Value矩阵。
+为了对称, $ \alpha_{lk} $ 也被计算出来，并且可以将**两者相加以创建一个注意力向量**，该向量映射所涉及的**两种模 态（k，l）**之间的协同作用。
+
+本质上, $ \alpha _ {kl} $ , $ \alpha _ {lk} $ ,两者之间的区别
+ $ \alpha _ {kl} $ 是模态k被用作query, 并且模态l扮演键和值的角色。
+ $ \alpha_{lk} $ 是模态l被用作query, 并且模态k扮演键和值的角色。
+
+在三个或更多模态的情况下，可以使用多个交叉注意机制，以便计算每个不同的组合。
+例如，如果我们有视觉 (V)、文本 (T) 和音频 (A) 模态，那么我们创建组合 VT、VA、TA 和 AVT 以捕获所有可能的跨模态交互。
+
+即使在使用注意力机制之后，也经常执行上述跨模态向量的串联以产生融合向量F。Sum(.)、max(.) 甚至池化操作也可以代替使用。
+
+
+
+参考文章:
+
+https://www.v7labs.com/blog/multimodal-deep-learning-guide
+
+https://blog.csdn.net/chumingqian/article/details/131293445

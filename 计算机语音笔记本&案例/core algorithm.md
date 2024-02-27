@@ -144,5 +144,371 @@ def denoise_signal(encoder, X_noisy):
 
 
 
+# 自监督学习
+
+## 音频领域对比学习
+
+### **wav2vec系列**
+
+wav2vec系列工作由facebook AI Research团队提出，包括wav2vec、vq-wav2vec、wav2vec2.0，效仿nlp上的word2vec，是语音的一种通用特征提取器。建议先了解奠基之作CPC论文。
+
+#### wav2vec
+
+论文：[wav2vec: Unsupervised Pre-training for Speech Recognition](https://arxiv.org/pdf/1904.05862.pdf)
+
+本文提出一种无监督的语音预训练模型 wav2vec，可迁移到语音下游任务。模型预训练一个简单的多层卷积神经网络，并提出了一种**噪声对比学习**二分类任务(noise contrastive binary classification task)，从而使得wav2vec可以在大量未标注的数据上进行训练。实验结果表明wav2vec预训练得到的speech representation超越了帧级别的音素分类任务并且可以显著提升ASR模型的表现，同时，**完全卷积架构**与使用的递归模型相比，可以在硬件上并行计算。
+
+模型结构如下图，首先将原始音频x编码为潜在空间z的 encoder network（5层卷积），再将潜在空间z转换为contextualized representation（9层卷积），最终特征维度为512x帧数。目标是在特征层面使用当前帧预测未来帧。
+
+<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/wav2vec.png" alt="img" style="zoom:50%;" />
+
+模型将原始音频信号 x 作为输入，基于历史信息和当前输入的信息预测未来的某些采样点，这里使用了两个编码器进行计算。
+
+- 编码器网络f(encoder network) 将音频信号嵌入到特征空间(latent space) 中将每个xi映射为一个特征向量zi, 类似于language model模型那样获得一个编码向量, 再基于此预测某个zi, 这里j>i;
+- 上下文网络g(context network) 结合了多个时间步长编码器以获得上下文表示(contextualized representations) 如图1。将多个zi转化为context representation C.这里有 $ c_ {i} $ =g( $ z_ {i} $ , $ z_ {i-1} $ $ \cdots $ $ z_ {v} $ )。这里的v为感受野(receptive field size)
+
+然后, 两个网络的输出Z, C都用于损失函数(loss function) 的计算。作者在实验中使用了两种不同的感受野模型, 一种为普通规模, 用来在一般数据集上训练, 另一种则是大规模(wav2vec larqe) 用来在大数据集上训练。在这两种模型中的感受野分别对应210ms和810ms.
+
+模型的loss中自然要包含预测未来某个z的损失。然而仅仅有正例是不够的, 因此作者利用了负采样技术, 作者从一个概率分布 $ p_ {n} $ 中采样出负样本z,最终模型的loss为区分正例和反例的contrastive loss :
+
+> 这里的损失函数在CPC论文的基础上继续改进，不再使用分母的形式避免除0之外，添加了配置参数λ 设置负样本的个数而不是计算全部减小了模型大小和计算量，并使用sigmoid将数据缩放在0-1
+
+ $ L_ {k} $ =- $ Z_ {i=1}^ {T-k} $ ( $ \log $ $ \sigma $ ( $ z^ {T}_ {i+k} $ $ h_ {k} $ ( $ c_ {i} $ ))+ $ \lambda $E[ $ \log $ $ \sigma $ ( $- \widetilde{z}^{T}h_ {k} $ ( $ c_ {i} $ ))]
+
+<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/v2-f68e4ab7c537b660024c2e992bd1c51f_720w.webp" alt="img" style="zoom: 33%;" />
+
+对于正样本，损失函数的第一项是负对数似然损失。它衡量了模型预测下一个上下文的编码的准确性。具体地说，对于每个上下文$c_i$，模型使用当前上下文的编码作为输入，然后预测下一个上下文的编码。通过比较预测的编码和实际编码，我们可以计算出负对数似然损失。该损失项的表示为$Z_{i=1}^{T-k}\log\sigma(z^{T}_{i+k}h_{k}(c_{i}))$，其中$Z_{i=1}^{T-k}$是对所有上下文的求和，$z^{T}_{i+k}$是下一个上下文的实际编码，$h_{k}(c_{i})$是模型对当前上下文的预测编码，$\sigma$是sigmoid函数，将编码二者相似度转换为概率。
+
+对于负样本，损失函数的第二项是对预测的负编码的正则化项。这个负编码是通过对当前上下文的预测编码$h_{k}(c_{i})$与一个随机生成的编码$\widetilde{z}^{T}$的点积得到的。通过对负编码的正则化，我们鼓励模型不仅仅关注正确的预测，还要确保预测的编码与随机编码之间的点积尽可能小。这个正则化项的表示为$\lambda E[\log\sigma(-\widetilde{z}^{T}h_{k}(c_{i}))]$，其中$\lambda$是正则化的权重，$E$是对随机编码的期望。
+
+通过将这两个项相加，我们得到了wav2vec模型的总损失函数。这个损失函数的目标是最小化正样本的负对数似然损失，同时确保负样本的正则化项尽可能小。这样，模型可以学习到一个有效的编码器，将语音信号映射到有用的表示空间中，以便后续的语音识别任务。
+
+#### vq-wav2vec
+
+论文：[vq-wav2vec: Self-Supervised Learning of Discrete Speech Representations](https://arxiv.org/pdf/1910.05453v1.pdf)
+
+本文基于wav2vec，将连续特征z通过提出的量化模块，变成离散特征z‘，实现特征空间从无限的连续到有限的离散的转换过程。这作为一个创新点，也是它有效的重要原因之一。
+
+乘积量化模块的作用是将Encoder的输出离散化成为了一组数量有限的语音表示，对于乘积量化的解释如下
+
+```
+乘积量化，是指笛卡尔积（Cartesian product），意思是指把原来的向量空间分解为若干个低维向量空间的笛卡尔积，并对分解得到的	低维向量空间分别做量化（quantization）。这样每个向量就能由多个低维空间的量化code组合表示。这里的量化不是将float量化成int，而是把连续空间量化成有限空间。
+
+1、乘积量化的原理
+
+说人话，就是把原来连续的特征空间假设是d维，拆分成G个子空间（codebook），每个子空间维度是d/G。然后分别在每个子空间里面聚类（比如K-mean算法），一共获得V个中心和其中心特征。每个类别的特征用其中心特征代替。
+
+结果就是，原来d维的连续空间（有无限种特征表达形式），坍缩成了有限离线的空间[GxV]，其可能的特征种类数就只有G*V个。
+
+2、乘积量化巧妙在哪儿
+
+乘积量化操作通过将无限的特征表达空间坍缩成有限的离散空间，让特征的鲁棒性更强，不会受少量扰动的影响（只要还在某一类里面，特征都由中心特征来代替）。这个聚类过程也是一个特征提取的过程，让特征的表征能力更强了。
+```
+
+文中提出了两种量化方法，Gumbel softmax和K-Means，如下图。 其中，左右两个部分中的 e1 … ev，就是码本（记录特征集，可以理解为 BERT 中的词表），Gumbel通过逻辑值最大化（回传时使用Gumbel softmax来保证可导）找对应码本条，K-Means通过计算与码本距离来找最小距离的码本条。
+
+<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/2021041709351933.png" alt="[]" style="zoom: 33%;" />
+
+#### wav2vec2
+
+本文基于wav2vec，结合了vq-wav2vec的量化模块和Transformer，提出了wav2vec2.0，如下图。其中，**模型由CNN和 Transformer 构成**，可以分为**特征编码器模块、上下文编码器模块和量化模块**三部分。特征编码器模块由卷积神经网络构成，把原始音频信号波形转化为隐层语音表征；量化模块把隐层语音表征转化为量化表征，作为对比目标；上下文编码器模块把隐层语音表征转化为上下文表征。上下文表征和量化表征通过对比任务实现自监督预训练。
+
+**论文：[wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations](https://arxiv.org/pdf/2006.11477v1.pdf)**
+
+<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/image-20240126210610133.png" alt="image-20240126210610133" style="zoom:50%;" />
+
+训练好的 wav2vec2.0 模型可以看作一个特征提取器，声音信号通过 wav2vec2.0 模型输出一个表征向量，该表征向量可以代替传统的 MFCC、频谱等声学特征，也可以采用特征融合的方式与传统声学特征一起使用，以充分利用不同特征间的互补性。
+
+> 预训练-微调模式继CV与NLP之后开始席卷语音领域，在实践中也印证了wav2vec2.0在小规模数据集上fine-tune之后确实能达到非常好的效果。但凡事都是有代价的，正如预训练模型给CV、NLP带去的困扰那样，wav2vec2.0虽然效果喜人，但**无奈太过笨重**，要实现线上使用还需要进行一定的压缩与加速。总的来说，瑕不掩瑜，wav2vec2.0依然是一个非常适合**低资源冷启动项目**的基础模型。
+
+模型的整体结构如下图，以下具体讲解结构。
+
+![img](https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/20210417093437857.png)
+
+通过多层卷积神经网络对语音音频进行编码，然后屏蔽生成的潜在语音表示的范围，类似于屏蔽语言建模潜在表示被馈送到 Transformer 网络以构建上下文表示，并通过对比任务训练模型，其中真正的潜在表示将与干扰项区分开来 。作为训练的一部分，我们通过gumbel softmax学习离散语音单元来表示对比任务中的潜在表示，我们发现这比非量化目标更有效。对未标记语音进行预训练后，对模型进行微调具有连接主义时间分类 (CTC) loss 的标记数据，用于下游语音识别任务 
+
+#####encoder network
+
+wav2vec2.0的encoder network由7层卷积层构成，结构如下图所示
+
+<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/FeatureEncoder.png" alt="img" style="zoom:50%;" />
+
+文章使用了7层的CNN，步长分别为(5,2,2,2,2,2,2)，卷积核宽度为(10,3,3,3,3,2,2)，假设输入语音的长度为(1,x)：
+    cnn0 (x-10)/5+1=x/5-1
+    cnn1 ((x/5-1)-3)/2+1=x/10-1
+    cnn2 x/20-1
+    cnn3 x/40-1
+    cnn4 x/80-1
+    cnn5 x/160
+    cnn6 x/320
+采样率为16k的情况下，1s的语音长度对应矩阵(1,16000)，论文中的channels大小设置的为512，对应的输出为(512,16000/320)=(512,50)，可以得到50个512维的向量，相当于每20ms产生一个512维的特征向量。以下是encoder network模型源码输出部分，将输出z 潜在表示.
+
+```
+  (feature_extractor): ConvFeatureExtractionModel(
+    (conv_layers): ModuleList(
+      (0): Sequential(
+        (0): Conv1d(1, 512, kernel_size=(10,), stride=(5,), bias=False)
+        (1): Dropout(p=0.0, inplace=False)
+        (2): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (3): ReLU()
+      )
+      (1): Sequential(
+        (0): Conv1d(512, 512, kernel_size=(8,), stride=(4,), bias=False)
+        (1): Dropout(p=0.0, inplace=False)
+        (2): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (3): ReLU()
+      )
+      (2-4): 3 x Sequential(
+        (0): Conv1d(512, 512, kernel_size=(4,), stride=(2,), bias=False)
+        (1): Dropout(p=0.0, inplace=False)
+        (2): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (3): ReLU()
+      )
+      (5-6): 2 x Sequential(
+        (0): Conv1d(512, 512, kernel_size=(1,), stride=(1,), bias=False)
+        (1): Dropout(p=0.0, inplace=False)
+        (2): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (3): ReLU()
+      )
+    )
+  )
+```
+##### context network
+
+整体结构图中的context包括左右两部分，左边负责将z转换成c（对应wav2vec2特征），右边负责将z离散化以计算损失。Encoder由Transformer组成，base版本的tfm层数为12，large版为24。
+
+左边部分中，对于输入512x50的z，有：
+post_extract_proj: 768x50
+apply_mask->pos_conv->LN: 768x50
+Transformer*12: 768x50
+choose_masking: 768xM，M为mask的帧数
+final_proj: 256xM
+
+右边部分中，对于输入512x50的z，有：
+choose_masking: 512xM
+quantizer: 256xM
+project_q: 256xM
+
+其中，量化的参数有：码本个数G=2，每个码本的条目个数V=320，条目的维度d/G=256/2=128。参数含义：G=latent_groups，V=latent_vars，d=vq_dim。
+具体的quantizer流程如下图所示，前向的时候直接找出来最大值对应的码本中的条目，相当于是一个离散的操作，但是这个步骤不可导，无法进行反向传播，为了解决这个问题，采用了gumbel softmax操作。
+
+<img src="https://markdown-1311598839.cos.ap-nanjing.myqcloud.com/img/quantizer.png" alt="img" style="zoom: 33%;" />
+
+**这里需要注意的是PositionEmbedding**，wav2vec使用一个卷积层来作为PE，并将PE加到hidden_state中后传入Transformers。wav2vec2原文描述为：
+
+```
+Instead of fixed positional embeddings which encode absolute positional information, we use a convolutional layer similar to which acts as relative positional embedding.
+我们使用类似于相对位置嵌入的卷积层，而不是编码绝对位置信息的固定位置嵌入。
+```
+
+利用卷积PE替代传统的三角函数PE的做法自FAIR的另一个研究成果——[《**Transformers with convolutional context for ASR**》](https://arxiv.org/abs/1904.11660)。在这篇文章中，作者通过实验比对了多个PE的效果，最终卷积PE脱颖而出，被wav2vec2继承了下来。
+
+###### **Mask（遮罩）**
+
+一帧被选为mask区域起点的概率p是0.065，mask长度M为10（文章的表述方法），对应的训练参数为–mask-length 10 --mask-prob 0.65
+
+获取mask区域的个数num_mask
+num_mask=语音长度/mask_length*mask_prob，由于存在overlap，所以最终mask的区域会少
+mask lengths有四种计算方式：
+static
+uniform
+normal
+poisson
+随机选取num_mask的起点，做mask，mask使用的向量
+torch.FloatTensor(args.encoder_embed_dim).uniform_()
+最终的效果大概有49%的帧会做mask，平均mask span的长度为14.7帧
+
+###### **损失函数**
+
+wav2vec 2.0的损失函数由两部分构成，对抗性损失Lm和多样性损失Ld。
+
+Lm的形式和CPC是相似的，区别在于使用余弦距离sim代替原来的linear映射层，同时用乘积量化的结果qt代替原来zt（表征能力更强嘛）。
+
+Ld是新引入的多样性损失，其目的是监督乘积量化中的聚类过程，期望每个中心点尽量的远。其中G是codebook数量，V是聚类中心的数量，p是某个特征在某个(g,v)子空间的概率值，其具体表达式就是gumble softmax的表达式。
+
+潜在表示到最终上下文表示模型源码如下(聚合器):
+
+```
+ (feature_aggregator): ConvAggegator(
+    (conv_layers): Sequential(
+      (0): Sequential(
+        (0): ReplicationPad1d((1, 0))
+        (1): Conv1d(512, 512, kernel_size=(2,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+      (1): Sequential(
+        (0): ReplicationPad1d((2, 0))
+        (1): Conv1d(512, 512, kernel_size=(3,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+      (2): Sequential(
+        (0): ReplicationPad1d((3, 0))
+        (1): Conv1d(512, 512, kernel_size=(4,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+      (3): Sequential(
+        (0): ReplicationPad1d((4, 0))
+        (1): Conv1d(512, 512, kernel_size=(5,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+      (4): Sequential(
+        (0): ReplicationPad1d((5, 0))
+        (1): Conv1d(512, 512, kernel_size=(6,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+      (5): Sequential(
+        (0): ReplicationPad1d((6, 0))
+        (1): Conv1d(512, 512, kernel_size=(7,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+      (6): Sequential(
+        (0): ReplicationPad1d((7, 0))
+        (1): Conv1d(512, 512, kernel_size=(8,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+      (7): Sequential(
+        (0): ReplicationPad1d((8, 0))
+        (1): Conv1d(512, 512, kernel_size=(9,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+      (8): Sequential(
+        (0): ReplicationPad1d((9, 0))
+        (1): Conv1d(512, 512, kernel_size=(10,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+      (9): Sequential(
+        (0): ReplicationPad1d((10, 0))
+        (1): Conv1d(512, 512, kernel_size=(11,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+      (10): Sequential(
+        (0): ReplicationPad1d((11, 0))
+        (1): Conv1d(512, 512, kernel_size=(12,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+      (11): Sequential(
+        (0): ReplicationPad1d((12, 0))
+        (1): Conv1d(512, 512, kernel_size=(13,), stride=(1,))
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Fp32GroupNorm(1, 512, eps=1e-05, affine=True)
+        (4): ReLU()
+      )
+    )
+    (residual_proj): ModuleList(
+      (0-11): 12 x None
+    )
+  )
+  (wav2vec_predictions): Wav2VecPredictionsModel(
+    (project_to_steps): ConvTranspose2d(512, 512, kernel_size=(1, 12), stride=(1, 1))
+    (dropout): Dropout(p=0.0, inplace=False)
+  )
+  (dropout_feats): Dropout(p=0.0, inplace=False)
+  (dropout_agg): Dropout(p=0.0, inplace=False)
+)
+```
+
+几点说明：
+
+1、一维卷积获得的结果z，一方面经过mask后直接送入到了transformer中，另一方面通过乘积量化的操作获得q，参与后面的损失函数。
+
+2、其中ct，qt均是来源于mask的部分，非mask的部分是用于预测mask部分的。所以Lm中的样本组成是：transformer在第t个mask中心的输出ct——预测值，通过乘积量化在第t个mask中得到的聚类中心值qt——正样本（理论上完成聚类后，mask里面的特征因为相似，其都属于同一个类，所以就一个中心），从其他mask里面随机抽取的乘积量化结果q——负样本。
+
+3、算法微调是在transformer后面接了一个linear层进行微调。
+
+4、wav2vec 2.0中没有对ct再次进行映射，而是直接求ct和qt的相似度。如果网络训练得很好，ct跟qt非常相似，微调的时候，是不是就可以不用transformer了，直接使用qt来替换？有兴趣的小伙伴可以思考一下，为什么还是要用transformer?
+
+**wav2vec3.0？**
+
+现在wav2vec 2.0虽然效果很好，但还是由很多缺点。
+
+1、模型结构中没有语言模型，需要外挂语言模型才能进行识别，不能做到端到端。
+
+2、transformer结构只能做纯离线识别，没办法流式解码。
+
+3、模型太大了，特别是预训练模型，非常消耗算力，普通人就不要幻想从零开始训练了，对预训练模型的依赖很高。
+
+那么facebook会不会在未来推出一个3.0呢？把rnnt-t loss包含进来，然后在transformer中引入chunk机制，然后再搞一个涵盖各个语言、各个方言的超级预训练模型。这样对于任意下游任务，只需要通过少量数据，就可以实现一个高精度、纯端到端、流式解码的语音识别系统了？
+
+最后，我在其他数据集上试了试wav2vec 2.0，效果确实很好，超过了精心训练的deepspeech、transformer等模型。所以强烈建议感兴趣的同学深入研究一下这篇论文。由于篇幅有限，很多算法细节都没有展开，以后希望有精力来把这个坑填了。
+
+##### wav2vec2.0的使用
+
+transformers库
+
+```python
+import soundfile as sf
+import torch
+from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
+
+processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
+model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")   # 用于ASR等，32维
+
+audio_input, sample_rate = sf.read(path_audio)  # (31129,)
+input_values = processor(audio_input, sampling_rate=sample_rate, return_tensors="pt").input_values  # torch.Size([1, 31129])
+
+logits = model(input_values).logits     # torch.Size([1, 97, 32])
+predicted_ids = torch.argmax(logits, dim=-1)    # torch.Size([1, 97])
+
+transcription = processor.decode(predicted_ids[0])  # ASR的解码结果
+
+from transformers import Wav2Vec2Model
+model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")    # 用于提取通用特征，768维
+wav2vec2 = model(input_values)['last_hidden_state']     # torch.Size([1, 97, 768])，模型出来是一个BaseModelOutput的结构体。
+```
+
+或者 fairseq 源码库
+
+```python
+import torch
+import fairseq
+
+cp_path = 'wav2vec_large.pt'
+model, cfg, task = fairseq.checkpoint_utils.load_model_ensemble_and_task([cp_path])
+model = model[0]
+model.eval()
+
+wav_input_16khz = torch.randn(1,10000)
+z = model.feature_extractor(wav_input_16khz)
+c = model.feature_aggregator(z)
+```
+
+参考文章：
+http://nelslip.ustc.edu.cn/2022/0509/c26914a562917/page.htm
+https://qinyuenlp.com/article/1837c5011ace/
+https://blog.csdn.net/xmdxcsj/article/details/115787729
+https://zhuanlan.zhihu.com/p/390545403
+https://tobefans.github.io/2021/11/24/wav2vec2/
+
+**相关资源**
+
+arXiv：https://arxiv.org/abs/2006.11477
+GitHub(FAIR)：https://github.com/pytorch/fairseq
+Github(HuggingFace)：https://github.com/huggingface/transformers/tree/main/src/transformers/models/wav2vec2
+代码复现地址：
+https://github.com/facebookresearch/fairseq/blob/main/examples/wav2vec/README.md
+https://paperswithcode.com/paper/unsupervised-speech-recognition#code
+
 
 
